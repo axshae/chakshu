@@ -27,7 +27,7 @@ grammar_print = '''
 			STRING: QUOTES /[A-Z a-z 0-9 //w]*/ QUOTES
 			QUOTES: "\'"
 			%import common.WORD
-			SPACE: " "*
+			SPACE: " "+
 '''	
 			
 parser = l(grammar_print)
