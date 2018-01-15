@@ -24,12 +24,13 @@ SPACE: " "*
 '''
 grammar_print = '''
 			start: "print" SPACE STRING
-			STRING: QUOTES /[A-Z a-z 0-9 //w]*/ QUOTES
+			STRING: QUOTES /[\\w \\s \\W \\d]*/ QUOTES	
 			QUOTES: "\'"
 			%import common.WORD
 			SPACE: " "+
+			%ignore SPACE
 '''	
-			
+	#	*\\w for all words    	*\\W non word special symbols  *\\s for space tabs  *\\d for digits		
 parser = l(grammar_print)
 
 inp = input("INP: ")
@@ -37,4 +38,4 @@ tree=parser.parse(inp)
 print( tree )
 
 from lark.tree import pydot__tree_to_png    # Just a neat utility function
-pydot__tree_to_png(tree, "examples/fruitflies.png")
+#pydot__tree_to_png(tree, "examples/fruitflies.png")
