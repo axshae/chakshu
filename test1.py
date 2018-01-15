@@ -23,14 +23,15 @@ SPACE: " "*
 				STRING: [STRING]| WORD
 '''
 grammar_print = '''
-			start: "print" SPACE STRING
+			start: "print" /\\s+/ STRING
 			STRING: QUOTES /[\\w \\s \\W \\d]*/ QUOTES	
 			QUOTES: "\'"
 			%import common.WORD
-			SPACE: " "+
-			%ignore SPACE
+			SPACE: /\\s+/
+			%ignore /\\s+/
 '''	
-	#	*\\w for all words    	*\\W non word special symbols  *\\s for space tabs  *\\d for digits		
+	#	*\\w for all words    	*\\W non word special symbols  *\\s for space tabs  *\\d for digits	
+# removed space production so it doesnt count as token	
 parser = l(grammar_print)
 
 inp = input("INP: ")

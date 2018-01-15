@@ -1,1 +1,3 @@
 GRAMMERS LIST:	http://www.antlr3.org/grammar/list.html
+
+EARLEY PARSER: https://medium.com/100-days-of-algorithms/day-94-earley-parser-3fffdb33edc7
