@@ -5,13 +5,13 @@ from lark import Lark as l
 #         ''')
 #inp=input('INP:')
 
-grammer = '''
+grammar = '''
 			start: NUMBER "+" NUMBER | NUMBER "-" NUMBER 
 			
 			%import common.NUMBER
 			'''
 			
-grammer2 = '''
+grammar2 = '''
 			start: NUMBER "+" NUMBER | NUMBER  "-" NUMBER  | WORD
 			WORD: " "*
 			
@@ -22,14 +22,15 @@ grammer2 = '''
 SPACE: " "*
 				STRING: [STRING]| WORD
 '''
-grammer_print = '''
-				start: "print " STRING
-				STRING: /[A-Z a-z 0-9 //w]*/
-				%import common.WORD
-				SPACE: " "*
-				'''		
+grammar_print = '''
+			start: "print" SPACE STRING
+			STRING: QUOTES /[A-Z a-z 0-9 //w]*/ QUOTES
+			QUOTES: "\'"
+			%import common.WORD
+			SPACE: " "+
+'''	
 			
-parser = l(grammer_print)
+parser = l(grammar_print)
 
 inp = input("INP: ")
 tree=parser.parse(inp)
