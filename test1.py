@@ -44,9 +44,13 @@ grammer_var='''
 '''
 
 grammer_v1='''
-			start: VNAME LIT_EQ
-			VNAME: /[A-Z a-z _][\\w _]*/
+			start: VNAME LIT_EQ STMT
+			VNAME: /[A-Z a-z _ ^\\s][\\w _]*/
 			LIT_EQ:"="
+			STMT: NUMBER|STR
+			STR: ESCAPED_STRING
+			%import common.ESCAPED_STRING
+			%import common.NUMBER
 			%import common.WS
 			%ignore WS
 			
