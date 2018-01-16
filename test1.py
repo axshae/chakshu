@@ -24,16 +24,40 @@ SPACE: " "*
 '''
 grammar_print = '''
 			start: "print" /\\s+/ STRING
-			STRING: QUOTES /[\\w \\s \\W \\d]*/ QUOTES	
+			STRING: QUOTES /[\\w \\s \\W ]*/ QUOTES
 			QUOTES: "\'"
 			%import common.WORD
 			SPACE: /\\s+/
-			%ignore /\\s+/
+						EXP: NUMBER "+" NUMBER | NUMBER  "-" NUMBER  |NUMBER "*" NUMBER|NUMBER "/" NUMBER |NUMBER "%" NUMBER| NUMBER
+
 '''	
+grammer_var='''
+			start: VNAME /[\\s]*/ LIT_EQ /[\\s]*/ STMT /[\\s]*/
+			VNAME: /^[A-Z a-z _][\\w _]*/
+			LIT_EQ:"="
+			STMT: NUM|STR
+			NUM:/\\d*/
+			STR:QUOTES /[\\w \\s \\W ]*/ QUOTES
+			QUOTES: "\'"
+			
+			
+'''
+
+grammer_v1='''
+			start: VNAME LIT_EQ
+			VNAME: /[A-Z a-z _][\\w _]*/
+			LIT_EQ:"="
+			%import common.WS
+			%ignore WS
+			
+			
+'''
+
+
 	#	*\\w for all words    	*\\W non word special symbols  *\\s for space tabs  *\\d for digits	
 # removed space production so it doesnt count as token	
-parser = l(grammar_print)
-
+#parser = l(grammar_print)
+parser=l(grammer_v1)
 inp = input("INP: ")
 tree=parser.parse(inp)
 print( tree )
