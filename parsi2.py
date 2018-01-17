@@ -13,8 +13,8 @@ grammar_expr='''
 	'''		
 grammar_recu='''
 	Value   = v1 / v2
-	v1		= ~"[0-9.]+"
-	v2		= "(" Expr ")"
+	v1		= ~"[0-9]+"
+	v2		=  Expr
 	Product = Expr (("*" / "/") Expr)*
 	Sum     = Expr (("+" / "-") Expr)*
 	Expr    = Product / Sum / Value
