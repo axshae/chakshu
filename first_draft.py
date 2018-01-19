@@ -59,7 +59,6 @@ DECIMAL = INT +r'\.'+ INT +r'|\.'+ INT
 #_EXP: ("e"|"E") SIGNED_INT
 #FLOAT: INT _EXP | DECIMAL _EXP?
 #SIGNED_FLOAT: ["+"|"-"] INT
-
 NUMBER= DECIMAL +'|'+ INT
 SIGNED_NUMBER= r'[+|-]'+ NUMBER
 
