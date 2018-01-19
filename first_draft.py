@@ -6,14 +6,9 @@
 
 # They're might be a difference between tokens and reserved words.
 
-import sys
-sys.path.insert(0, "../..")
-
-if sys.version_info[0] >= 3:
-    raw_input = input
-
-
 from ply import lex
+from ply.lex import TOKEN
+
 
 tokens = [ # if ERROR: No token list is defined then make sure its written as "tokens". It was "TOKENS" before and it made it not not find it.
 	"PRINT", # I'm unsure if we should really keep print that fundamental or just make a console support later as a library support.
@@ -53,8 +48,27 @@ def t_PRINT(t):
 # 	# t.type = "VARIABLE"
 # 	return t
 
+
+DIGIT= r'\d'
+
+INT=DIGIT+'+'
+SIGNED_INT= r'[\+|-]'+INT
+DECIMAL = INT +r'\.'+ INT +r'?|\.'+ INT
+
+# float = /-?\d+(\.\d+)?([eE][+-]?\d+)?/
+#_EXP: ("e"|"E") SIGNED_INT
+#FLOAT: INT _EXP | DECIMAL _EXP?
+#SIGNED_FLOAT: ["+"|"-"] INT
+
+NUMBER= DECIMAL +'|'+ INT
+SIGNED_NUMBER= r'[+|-]'+ NUMBER
+
+@TOKEN(NUMBER)
 def t_NUMBER(t): # commented cause error: it matches empty string[SOLVED] now new error: Rule 't_NUMBER' returned an unknown token type 't_NUMBER' [SOLVED]. Solution: add t_ignore.
-	r'[0-9]+[.[0-9]+]* ' # no []. $ is used to specify that the string should end after number. Or else, "1233faw" will be recognised as a NUMBER token.
+	# r'[0-9]+[.[0-9]+]* ' # no []. $ is used to specify that the string should end after number. Or else, "1233faw" will be recognised as a NUMBER token.
+	# r'\d+[\.\d+]*' still works
+	#r'\d+'
+	# t.value = int(t.value)
 	return t
 
 # Please add escapse seq for special characters in t_String(). (Cause mujhe nahi mila xD)
@@ -81,6 +95,7 @@ lexer = lex.lex()
 # lex.input("akad bakad bambe bo 69")
 # lex.input("true")
 # lex.input("+")
+lex.input("print 23")
 
 while True:
 	tok = lexer.token()
@@ -115,8 +130,8 @@ def p_print_prod(p):
 # 	p[1] = p[3]
 
 def p_printable(p):
-	'''printable : STRING 
-				| NUMBER 
+	'''printable : NUMBER
+				| STRING
 				'''
 	p[0] = p[1] 
 
