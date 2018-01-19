@@ -173,6 +173,9 @@ def p_printable(p):
 
 parser = yacc.yacc()
 
+intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Kumar and Paramdeep Singh.\n'
+print(intro)
+
 while True:
     try:
         inp = raw_input('>>> ')
