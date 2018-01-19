@@ -1,10 +1,17 @@
 # Could be important: https://stackoverflow.com/questions/5022129/ply-lex-parsing-problem
 
-#################################################
-#	PLEASE TEST THE HELL OUTTA THIS CODE	#
-#################################################
+############################################
+#	PLEASE TEST THE HELL OUTTA THIS CODE   #
+############################################
 
 # They're might be a difference between tokens and reserved words.
+
+import sys
+sys.path.insert(0, "../..")
+
+if sys.version_info[0] >= 3:
+    raw_input = input
+
 
 from ply import lex
 
@@ -86,18 +93,29 @@ while True:
 
 from ply import yacc
 
-symbol_table = {} # We might change to the "in-build symbol table you talked about."
+precedence = (
+    ('left', '+', '-'),
+    ('left', '*', '/'),
+)
+
+# symbol_table = {} # We might change to the "in-build symbol table you talked about."
 
 
 def p_print_statement(p):
-	"print_start: t_PRINT PRINTABLE"
+	'print_start : t_PRINT PRINTABLE'
 	print(p[2].value) # Later we'll have to convert it to a language and not just print in native language.
 
 def p_PRINTABLE(p):
-	"PRINTABLE: t_STRING | t_NUMBER | t_ID" # I had to make another function cause my python reads """ """ or ''' ''' as comments.
+	'''PRINTABLE : t_STRING
+	 			| t_NUMBER 
+	 			| t_ID
+	 			''' # I had to make another function cause my python reads """ """ or ''' ''' as comments.
 
 def p_operators_statement(p):
-	"expr: expr t_OPERATORS expr | t_ID | t_NUMBER"
+	'''expr : expr t_OPERATORS expr 
+			| t_ID 
+			| t_NUMBER
+			'''
 
 	if p[2] == '+':
 		p[0] = p[1] + p[3]
@@ -109,7 +127,7 @@ def p_operators_statement(p):
 		p[0] = p[1] * p[3]
 
 def p_assignment_statement(p):
-	'lvalue : t_ID t_ASSIGNMENT expr'
+	r'lvalue : t_ID t_ASSIGNMENT expr'
 	p[1] = p[2]
 
 
@@ -117,7 +135,7 @@ parser = yacc.yacc()
 
 while True:
     try:
-        inp = raw_input('>>> ')
+        inp = input('>>> ')
     except EOFError: # so we can exit.
         break
     if not s:
