@@ -15,9 +15,9 @@ tokens = [ # if ERROR: No token list is defined then make sure its written as "t
 	# "IF",
 	# "ELSE",
 	# "OPERATORS",
-	# "ASSIGNMENT",
+	 "ASSIGNMENT",
 	# "COMPARISON",
-	# "ID",
+	 "ID",
 	"NUMBER",
 	"STRING"
 	# "BOOLEAN"
@@ -53,7 +53,7 @@ DIGIT= r'\d'
 
 INT=DIGIT+'+'
 SIGNED_INT= r'[\+|-]'+INT
-DECIMAL = INT +r'\.'+ INT +r'?|\.'+ INT
+DECIMAL = INT +r'\.'+ INT +r'|\.'+ INT
 
 # float = /-?\d+(\.\d+)?([eE][+-]?\d+)?/
 #_EXP: ("e"|"E") SIGNED_INT
@@ -73,7 +73,7 @@ def t_NUMBER(t): # commented cause error: it matches empty string[SOLVED] now ne
 
 # Please add escapse seq for special characters in t_String(). (Cause mujhe nahi mila xD)
 def t_STRING(t):
-	r'\" [\w \s]* \"' # \w = alphanumeric. Dont put \" in "" 
+	r'\" [\w \s]* \"' # \w = alphanumeric. Dont put \" in ""
 	return t
 
 # def t_BOOLEAN(t):
@@ -133,7 +133,7 @@ def p_printable(p):
 	'''printable : NUMBER
 				| STRING
 				'''
-	p[0] = p[1] 
+	p[0] = p[1]
 
 # def p_rvalue(p):
 # 	'RVALUE : NUMBER'
@@ -144,7 +144,7 @@ def p_printable(p):
 
 # def p_PRINTABLE(p):
 # 	'''PRINTABLE : STRING
-# 	 			| NUMBER 
+# 	 			| NUMBER
 # 	 			| ID
 # 	 			''' # I had to make another function cause my python reads """ """ or ''' ''' as comments.
 
@@ -152,8 +152,8 @@ def p_printable(p):
 # 	'''expr : expr "+" expr
 # 			| expr "-" expr
 # 			| expr "/" expr
-# 			| expr "*" expr 
-# 			| ID 
+# 			| expr "*" expr
+# 			| ID
 # 			| NUMBER
 # 			'''
 
@@ -175,7 +175,7 @@ parser = yacc.yacc()
 
 while True:
     try:
-        inp = raw_input('>>> ')
+        inp = input('>>> ')
     except EOFError: # so we can exit.
         break
     if not inp:
