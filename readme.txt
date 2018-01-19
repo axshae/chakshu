@@ -47,3 +47,8 @@ precedence = (
   *read these example so that we could learn how to actually code our language
 
   ...............................................................................................................
+**RULES TO REMEMBER**
+1. production function must begin with p_
+2. token function must begin with _t
+3. in production there must be space before and after colon (:)
+4. multi line productions using (|) must be written inside three quotes(''' ''')
