@@ -1,8 +1,8 @@
 # Could be important: https://stackoverflow.com/questions/5022129/ply-lex-parsing-problem
 
-############################################
-#	PLEASE TEST THE HELL OUTTA THIS CODE   #
-############################################
+#################################################
+#	PLEASE TEST THE HELL OUTTA THIS CODE	#
+#################################################
 
 # They're might be a difference between tokens and reserved words.
 
