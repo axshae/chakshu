@@ -51,16 +51,19 @@ def t_PRINT(t):
 
 DIGIT= r'\d'
 
-INT=DIGIT+'+'
-SIGNED_INT= r'[\+|-]'+INT
+SIGNED_INT= r'[\+|-]'+DIGIT+ r'+'          # if i remove ^ from this regex then SIGNED_DECIMAL will not work and SIGNED_INT will work and vice versa
+                                            #may be the problem is with redundant regex for both SIGNED_INT and SIGNED_DECIMAL
+INT=DIGIT + r'+'
+
 DECIMAL = INT +r'\.'+ INT +r'|\.'+ INT
+SIGNED_DECIMAL = r'([\+|-]'+INT +r'\.'+ INT +r')|'+ r'[\+|-]'+'\.'+ INT
 
 # float = /-?\d+(\.\d+)?([eE][+-]?\d+)?/
 #_EXP: ("e"|"E") SIGNED_INT
 #FLOAT: INT _EXP | DECIMAL _EXP?
 #SIGNED_FLOAT: ["+"|"-"] INT
 
-NUMBER= DECIMAL +'|'+ INT
+NUMBER= DECIMAL +'|'+ INT + '|'+ SIGNED_INT + '|' + SIGNED_DECIMAL
 SIGNED_NUMBER= r'[+|-]'+ NUMBER
 
 @TOKEN(NUMBER)
@@ -173,7 +176,7 @@ def p_printable(p):
 
 parser = yacc.yacc()
 
-intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Kumar and Paramdeep Singh.\n'
+intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
 print(intro)
 
 while True:
