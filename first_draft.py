@@ -19,13 +19,13 @@ tokens = [ # if ERROR: No token list is defined then make sure its written as "t
 	"PRINT", # I'm unsure if we should really keep print that fundamental or just make a console support later as a library support.
 	# "IF",
 	# "ELSE",
-	"OPERATORS",
+	# "OPERATORS",
 	"ASSIGNMENT",
 	# "COMPARISON",
 	"ID",
 	"NUMBER",
-	"STRING",
-	"BOOLEAN"
+	"STRING"
+	# "BOOLEAN"
 	]
 
 #########################################################################################
@@ -34,35 +34,37 @@ tokens = [ # if ERROR: No token list is defined then make sure its written as "t
 
 # I like commenting like this lol.
 
+op_literal = ['+', '-', '/', '*']
+
 def t_PRINT(t):
-	r'print\s+$' # no []
+	r'print\s+' # no []
 	return t
 
-def t_OPERATORS(t):
-	r'[+ - * /]$'
-	return t
+# def t_OPERATORS(t):
+# 	r'[+ - * /]$'
+# 	return t
 
 def t_ASSIGNMENT(t):
-	r'"="$'
+	r'"="'
 	return t
 
-def t_ID(t):
-	r'[a-z A-Z _][a-z A-Z 0-9 _]*$'
-	# t.type = "VARIABLE"
-	return t
+# def t_ID(t):
+# 	r'[a-z A-Z _][a-z A-Z 0-9 _]*'
+# 	# t.type = "VARIABLE"
+# 	return t
 
 def t_NUMBER(t): # commented cause error: it matches empty string[SOLVED] now new error: Rule 't_NUMBER' returned an unknown token type 't_NUMBER' [SOLVED]. Solution: add t_ignore.
-	r'[0-9]+[.[0-9]+]* $' # no []. $ is used to specify that the string should end after number. Or else, "1233faw" will be recognised as a NUMBER token.
+	r'[0-9]+[.[0-9]+]* ' # no []. $ is used to specify that the string should end after number. Or else, "1233faw" will be recognised as a NUMBER token.
 	return t
 
 # Please add escapse seq for special characters in t_String(). (Cause mujhe nahi mila xD)
 def t_STRING(t):
-	r'^\" [\w \s]* \"$' # \w = alphanumeric. Dont put \" in "" 
+	r'^\" [\w \s]* \"' # \w = alphanumeric. Dont put \" in "" 
 	return t
 
-def t_BOOLEAN(t):
-	r'["true" "false"]$'
-	return t
+# def t_BOOLEAN(t):
+# 	r'["true" "false"]$'
+# 	return t
 
 def t_error(t): # why? cuz i'm a good boi. Comment out this def to use python error reporting which is (duh) better.
 	print("Error agya re baba!: ", t.value, " me")
@@ -93,51 +95,75 @@ while True:
 
 from ply import yacc
 
-precedence = (
-    ('left', '+', '-'),
-    ('left', '*', '/'),
-)
+# precedence = (
+#     ('left', '+', '-'),
+#     ('left', '*', '/'),
+# )
 
 # symbol_table = {} # We might change to the "in-build symbol table you talked about."
 
 
-def p_print_statement(p):
-	'print_start : t_PRINT PRINTABLE'
-	print(p[2].value) # Later we'll have to convert it to a language and not just print in native language.
+def p_start(p):
+	'''start : print_prod 
+			| assign'''
 
-def p_PRINTABLE(p):
-	'''PRINTABLE : t_STRING
-	 			| t_NUMBER 
-	 			| t_ID
-	 			''' # I had to make another function cause my python reads """ """ or ''' ''' as comments.
+def p_print_prod(p):
+	'print_prod : PRINT printable'
+	print(p[1])
 
-def p_operators_statement(p):
-	'''expr : expr t_OPERATORS expr 
-			| t_ID 
-			| t_NUMBER
-			'''
+def p_assign(p):
+	'assign : ID "=" RVALUE'
+	p[1] = p[3]
 
-	if p[2] == '+':
-		p[0] = p[1] + p[3]
-	elif p[2] == '-':
-		p[0] = p[1] - p[3]
-	elif p[2] == '*':
-		p[0] = p[1] * p[3]
-	elif p[3] == '/':
-		p[0] = p[1] * p[3]
+def p_printable(p):
+	'''printable : STRING 
+				| NUMBER 
+				'''
+	p[0] = p[1] 
 
-def p_assignment_statement(p):
-	r'lvalue : t_ID t_ASSIGNMENT expr'
-	p[1] = p[2]
+def p_rvalue(p):
+	'''RVALUE : NUMBER '''
+	p[0] = p[1]
+# def p_print_statement(p):
+# 	'print_start : PRINT PRINTABLE'
+# 	print(p[2].value) # Later we'll have to convert it to a language and not just print in native language.
+
+# def p_PRINTABLE(p):
+# 	'''PRINTABLE : STRING
+# 	 			| NUMBER 
+# 	 			| ID
+# 	 			''' # I had to make another function cause my python reads """ """ or ''' ''' as comments.
+
+# def p_operators_statement(p):
+# 	'''expr : expr "+" expr
+# 			| expr "-" expr
+# 			| expr "/" expr
+# 			| expr "*" expr 
+# 			| ID 
+# 			| NUMBER
+# 			'''
+
+# 	if p[2] == '+':
+# 		p[0] = p[1] + p[3]
+# 	elif p[2] == '-':
+# 		p[0] = p[1] - p[3]
+# 	elif p[2] == '*':
+# 		p[0] = p[1] * p[3]
+# 	elif p[3] == '/':
+# 		p[0] = p[1] * p[3]
+
+# def p_assignment_statement(p):
+# 	r'lvalue : ID ASSIGNMENT expr'
+# 	p[1] = p[2]
 
 
 parser = yacc.yacc()
 
 while True:
     try:
-        inp = input('>>> ')
+        inp = raw_input('>>> ')
     except EOFError: # so we can exit.
         break
-    if not s:
+    if not inp:
         continue
-    yacc.parse(s)
+    yacc.parse(inp)
