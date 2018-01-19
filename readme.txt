@@ -49,6 +49,7 @@ precedence = (
   ...............................................................................................................
 **RULES TO REMEMBER**
 1. production function must begin with p_
-2. token function must begin with _t
+2. token function must begin with t_
 3. in production there must be space before and after colon (:)
 4. multi line productions using (|) must be written inside three quotes(''' ''')
+5. check your regex carefully before compiling like avoid using ^ or $
