@@ -57,11 +57,31 @@ grammer_v1='''
 			
 '''
 
-
+grammer_v2='''
+			start= VNAME LIT_EQ STMT
+			VNAME= /[A-Z a-z _ ^\\s][\\w _]*/
+			LIT_EQ:"="
+			STMT= STR|NUM
+			NUM= [NUM OPR]NUMBER
+			OPR="*"|"+"
+			STR= ESCAPED_STRING
+			
+			
+			
+'''
+grammar_recu='''
+	start: Value
+	Value   : v1 | v2
+	v1		: /[0-9 .]+/
+	v2		:  Expr
+	Product : Expr (("*" | "/") Expr)*
+	Sum     : Expr (("+" | "-") Expr)*
+	Expr    : Product | Sum | Value
+'''		
 	#	*\\w for all words    	*\\W non word special symbols  *\\s for space tabs  *\\d for digits	
 # removed space production so it doesnt count as token	
 #parser = l(grammar_print)
-parser=l(grammer_v1)
+parser=l(grammar_recu)
 inp = input("INP: ")
 tree=parser.parse(inp)
 print( tree )
