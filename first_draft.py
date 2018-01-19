@@ -20,9 +20,9 @@ tokens = [ # if ERROR: No token list is defined then make sure its written as "t
 	# "IF",
 	# "ELSE",
 	# "OPERATORS",
-	"ASSIGNMENT",
+	# "ASSIGNMENT",
 	# "COMPARISON",
-	"ID",
+	# "ID",
 	"NUMBER",
 	"STRING"
 	# "BOOLEAN"
@@ -44,9 +44,9 @@ def t_PRINT(t):
 # 	r'[+ - * /]$'
 # 	return t
 
-def t_ASSIGNMENT(t):
-	r'"="'
-	return t
+# def t_ASSIGNMENT(t):
+# 	r'"="'
+# 	return t
 
 # def t_ID(t):
 # 	r'[a-z A-Z _][a-z A-Z 0-9 _]*'
@@ -59,7 +59,7 @@ def t_NUMBER(t): # commented cause error: it matches empty string[SOLVED] now ne
 
 # Please add escapse seq for special characters in t_String(). (Cause mujhe nahi mila xD)
 def t_STRING(t):
-	r'^\" [\w \s]* \"' # \w = alphanumeric. Dont put \" in "" 
+	r'\" [\w \s]* \"' # \w = alphanumeric. Dont put \" in "" 
 	return t
 
 # def t_BOOLEAN(t):
@@ -76,7 +76,7 @@ lexer = lex.lex()
 
 # Try your inputs. These inputs work:
 # lex.input("2")
-lex.input("\"Hello World\"")
+# lex.input("print \"Hello World\"")
 # lex.input("3.14")
 # lex.input("akad bakad bambe bo 69")
 # lex.input("true")
@@ -104,16 +104,15 @@ from ply import yacc
 
 
 def p_start(p):
-	'''start : print_prod 
-			| assign'''
+	'start : print_prod'
 
 def p_print_prod(p):
 	'print_prod : PRINT printable'
-	print(p[1])
+	print(p[2])
 
-def p_assign(p):
-	'assign : ID "=" RVALUE'
-	p[1] = p[3]
+# def p_assign(p):
+# 	'assign : ID "=" RVALUE'
+# 	p[1] = p[3]
 
 def p_printable(p):
 	'''printable : STRING 
@@ -121,9 +120,9 @@ def p_printable(p):
 				'''
 	p[0] = p[1] 
 
-def p_rvalue(p):
-	'''RVALUE : NUMBER '''
-	p[0] = p[1]
+# def p_rvalue(p):
+# 	'RVALUE : NUMBER'
+# 	p[0] = p[1]
 # def p_print_statement(p):
 # 	'print_start : PRINT PRINTABLE'
 # 	print(p[2].value) # Later we'll have to convert it to a language and not just print in native language.
