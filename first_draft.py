@@ -6,13 +6,6 @@
 
 # They're might be a difference between tokens and reserved words.
 
-import sys
-sys.path.insert(0, "../..")
-
-if sys.version_info[0] >= 3:
-    raw_input = input
-
-
 from ply import lex
 from ply.lex import TOKEN
 
