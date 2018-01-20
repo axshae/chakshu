@@ -9,7 +9,7 @@
 from ply import lex
 from ply.lex import TOKEN
 
-
+sym_table={}
 tokens = [ # if ERROR: No token list is defined then make sure its written as "tokens". It was "TOKENS" before and it made it not not find it.
 	"PRINT", # I'm unsure if we should really keep print that fundamental or just make a console support later as a library support.
 	# "IF",
@@ -39,14 +39,13 @@ def t_PRINT(t):
 # 	r'[+ - * /]$'
 # 	return t
 
-# def t_ASSIGNMENT(t):
-# 	r'"="'
-# 	return t
+def t_ASSIGNMENT(t):
+	r'\s* = \s*'
+	return t
 
-# def t_ID(t):
-# 	r'[a-z A-Z _][a-z A-Z 0-9 _]*'
-# 	# t.type = "VARIABLE"
-# 	return t
+def t_ID(t):
+	r'[a-z A-Z _][a-z A-Z 0-9 _]*'
+	return t
 
 
 DIGIT= r'\d'
@@ -54,12 +53,13 @@ DIGIT= r'\d'
 INT=DIGIT+'+'
 SIGNED_INT= r'[\+|-]'+INT
 DECIMAL = INT +r'\.'+ INT +r'|\.'+ INT
-
+SIGNED_DECIMAL = r'([\+|-]'+INT +r'\.'+ INT +r')|'+ r'[\+|-]'+'\.'+ INT
 # float = /-?\d+(\.\d+)?([eE][+-]?\d+)?/
 #_EXP: ("e"|"E") SIGNED_INT
 #FLOAT: INT _EXP | DECIMAL _EXP?
 #SIGNED_FLOAT: ["+"|"-"] INT
-NUMBER= DECIMAL +'|'+ INT
+
+NUMBER= DECIMAL +'|'+ INT + '|'+ SIGNED_INT + '|' + SIGNED_DECIMAL
 SIGNED_NUMBER= r'[+|-]'+ NUMBER
 
 @TOKEN(NUMBER)
@@ -87,20 +87,13 @@ t_ignore = ' \t' # See comment at line 37
 
 lexer = lex.lex()
 
-# Try your inputs. These inputs work:
-# lex.input("2")
-# lex.input("print \"Hello World\"")
-# lex.input("3.14")
-# lex.input("akad bakad bambe bo 69")
-# lex.input("true")
-# lex.input("+")
-lex.input("print 23")
+lex.input("print abc bbc")  #input test str
 
 while True:
 	tok = lexer.token()
 	if not tok:
 		break
-	print(tok)
+	print(tok.value+'\t'+tok.type)
 
 
 #################################
@@ -117,16 +110,26 @@ from ply import yacc
 # symbol_table = {} # We might change to the "in-build symbol table you talked about."
 
 
-def p_start(p):
-	'start : print_prod'
+def p_start(p):				# remeber to add new production symbol to the start production
+	'''start : print_prod
+			| assign'''
 
 def p_print_prod(p):
-	'print_prod : PRINT printable'
-	print(p[2])
+	'''print_prod : PRINT printable
+				| PRINT ID'''
+#	if p[2].startswith('\"') or p[2].isdigit() or p[2].isdecimal():
+	#	print(p[2])
+	#else:
+	print(sym_table.get(p[2],p[2])) # works good but prints var name if not present in symbol table
+									# also ID regex accepts var name swith space
 
-# def p_assign(p):
-# 	'assign : ID "=" RVALUE'
-# 	p[1] = p[3]
+def p_assign(p):
+	'assign : ID ASSIGNMENT rvalue'
+	sym_table[p[1]]=p[3]
+
+def p_rvalue(p):
+	'rvalue : printable '
+	p[0] = p[1]
 
 def p_printable(p):
 	'''printable : NUMBER
@@ -172,7 +175,7 @@ def p_printable(p):
 
 parser = yacc.yacc()
 
-intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Kumar and Paramdeep Singh.\n'
+intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
 print(intro)
 
 while True:
