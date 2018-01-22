@@ -88,7 +88,7 @@ def t_end(t):
 # 	return t
 
 def t_error(t): # why? cuz i'm a good boi. Comment out this def to use python error reporting which is (duh) better.
-	print("Error agya re baba!: ", t.value, " me")
+	print("Token Error: ", t.value)
 	t.lexer.skip(1) # skip 1 token.
 
 t_ignore = ' \t' # See comment at line 37
@@ -167,6 +167,9 @@ def p_end_program(p):
 	mcode = tcode.compile("file.py")
 	op=exec(mcode)
 	print(op)
+	
+def p_error(p):
+	print("Syntax Error")
 # def p_rvalue(p):
 # 	'RVALUE : NUMBER'
 	# p[0] = p[1]
