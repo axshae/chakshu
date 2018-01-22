@@ -11,6 +11,7 @@ from ply.lex import TOKEN
 import parser as py_parser
 
 code = ""
+error = False
 
 sym_table={}
 tokens = [ # if ERROR: No token list is defined then make sure its written as "tokens". It was "TOKENS" before and it made it not not find it.
@@ -88,8 +89,10 @@ def t_end(t):
 # 	return t
 
 def t_error(t): # why? cuz i'm a good boi. Comment out this def to use python error reporting which is (duh) better.
-	print("Token Error: ", t.value)
+	print("Token error: ", t.value)
 	t.lexer.skip(1) # skip 1 token.
+	global error
+	error = True # couldn't return any boolean cause this error came up: AttributeError: 'bool' object has no attribute 'type'
 
 t_ignore = ' \t' # See comment at line 37
 
@@ -123,35 +126,27 @@ def p_start(p):				# remeber to add new production symbol to the start productio
 	'''start : print_prod
 			| assign
 			| end_program'''
-	# global code
-	# code = py_parser.expr(code)
-	# code = code.compile("file.py", )
-	# eval(code)
 
 def p_print_prod(p):
 	'''print_prod : PRINT printable
 		'''
-	global code
 	prin = str(p[1]) + "(" + str(p[2]) + ")"
-	code += prin + "\n"
-	# if p[2][1]=='ID': # fetching type @index 1
-	# 	print(sym_table.get(p[2][0],'undefined variable '+p[2][0]))	#value @index 0
-	# else:
-	# 	print(p[2]) # works good but prints var name if not present in symbol table
-									# also ID regex accepts var name swith space
+	global error
+	print(error)
+	if not error:
+		global code
+		code += prin + "\n"
+	error = False
 
 def p_assign(p):
 	'assign : ID ASSIGNMENT printable'
-
+	global error
+	print(error)
 	ass = str(p[1]) + str(p[2]) + str(p[3])
-	# print(ass)
-	global code
-	code += ass + "\n"
-	# sym_table[p[1][0]]=p[3]
-
-# def p_rvalue(p):
-# 	'rvalue : printable '
-# 	p[0] = p[10]
+	if not error:
+		global code
+		code += ass + "\n"
+	error = False
 
 def p_printable(p):
 	'''printable : NUMBER
@@ -165,45 +160,14 @@ def p_end_program(p):
 	global code
 	tcode = py_parser.suite(code)
 	mcode = tcode.compile("file.py")
+	print("Code:\n", code)
 	op=exec(mcode)
 	print(op)
-	
+
 def p_error(p):
 	print("Syntax Error")
-# def p_rvalue(p):
-# 	'RVALUE : NUMBER'
-	# p[0] = p[1]
-# def p_print_statement(p):
-# 	'print_start : PRINT PRINTABLE'
-# 	print(p[2].value) # Later we'll have to convert it to a language and not just print in native language.
-
-# def p_PRINTABLE(p):
-	# '''PRINTABLE : STRING
-# 	 			| NUMBER
-# 	 			| ID
-# 	 			''' # I had to make another function cause my python reads """ """ or ''' ''' as comments.
-
-# def p_operators_statement(p):
-# 	'''expr : expr "+" expr
-# 			| expr "-" expr
-# 			| expr "/" expr
-# 			| expr "*" expr
-# 			| ID
-# 			| NUMBER
-# 			'''
-
-# 	if p[2] == '+':
-# 		p[0] = p[1] + p[3]
-# 	elif p[2] == '-':
-		# p[0] = p[1] - p[3]
-# 	elif p[2] == '*':
-# 		p[0] = p[1] * p[3]
-# 	elif p[3] == '/':
-# 		p[0] = p[1] * p[3]
-
-# def p_assignment_statement(p):
-# 	r'lvalue : ID ASSIGNMENT expr'
-# 	p[1] = p[2]
+	global error
+	error = True
 
 
 parser = yacc.yacc()
