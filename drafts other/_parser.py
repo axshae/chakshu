@@ -22,7 +22,7 @@ def p_statement_id(p):
     p[0]=('ID',p[1],p[3])
 
 def p_statement_id_bad(p):
-    r'''statement : variable eq error
+    r'''statement : variable eq
                     | variable error expr'''
     p[0]='INVALID SYNATX FOR DEFINFING A VARIABLE'
 
@@ -96,5 +96,4 @@ def run_parser():
         out=parser.parse(inp)
         print(out)
 
-parser = yacc.yacc()
-run_parser()
+parser = yacc.yacc(debug=0)

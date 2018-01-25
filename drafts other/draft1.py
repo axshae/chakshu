@@ -1,2 +1,3 @@
-from ply import lex
-from ply.lex import TOKEN
+import _parser as chakshu
+
+chakshu.run_parser()

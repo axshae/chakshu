@@ -30,7 +30,7 @@ Rule 0     S' -> program
 Rule 1     program -> statement
 Rule 2     program -> error
 Rule 3     statement -> variable eq expr
-Rule 4     statement -> variable eq error
+Rule 4     statement -> variable eq
 Rule 5     statement -> variable error expr
 Rule 6     expr -> expr PLUS expr
 Rule 7     expr -> expr MINUS expr
@@ -72,7 +72,7 @@ compile              :
 else                 : 
 end                  : 
 eq                   : 3 4 20
-error                : 2 4 5
+error                : 2 5
 function             : 
 ge                   : 19
 gt                   : 18
@@ -107,7 +107,7 @@ state 0
     (1) program -> . statement
     (2) program -> . error
     (3) statement -> . variable eq expr
-    (4) statement -> . variable eq error
+    (4) statement -> . variable eq
     (5) statement -> . variable error expr
     (22) variable -> . ID
 
@@ -141,7 +141,7 @@ state 3
 state 4
 
     (3) statement -> variable . eq expr
-    (4) statement -> variable . eq error
+    (4) statement -> variable . eq
     (5) statement -> variable . error expr
 
     eq              shift and go to state 6
@@ -166,7 +166,7 @@ state 5
 state 6
 
     (3) statement -> variable eq . expr
-    (4) statement -> variable eq . error
+    (4) statement -> variable eq .
     (6) expr -> . expr PLUS expr
     (7) expr -> . expr MINUS expr
     (8) expr -> . expr TIMES expr
@@ -179,11 +179,11 @@ state 6
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    error           shift and go to state 10
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    $end            reduce using rule 4 (statement -> variable eq .)
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
     variable                       shift and go to state 8
@@ -204,14 +204,14 @@ state 7
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
     variable                       shift and go to state 8
-    expr                           shift and go to state 15
+    expr                           shift and go to state 14
 
 state 8
 
@@ -236,21 +236,14 @@ state 9
     (10) expr -> expr . POWER expr
 
     $end            reduce using rule 3 (statement -> variable eq expr .)
-    PLUS            shift and go to state 16
-    MINUS           shift and go to state 17
-    TIMES           shift and go to state 18
-    DIVIDE          shift and go to state 19
-    POWER           shift and go to state 20
+    PLUS            shift and go to state 15
+    MINUS           shift and go to state 16
+    TIMES           shift and go to state 17
+    DIVIDE          shift and go to state 18
+    POWER           shift and go to state 19
 
 
 state 10
-
-    (4) statement -> variable eq error .
-
-    $end            reduce using rule 4 (statement -> variable eq error .)
-
-
-state 11
 
     (15) expr -> MINUS . expr
     (6) expr -> . expr PLUS expr
@@ -265,16 +258,16 @@ state 11
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 21
+    expr                           shift and go to state 20
     variable                       shift and go to state 8
 
-state 12
+state 11
 
     (11) expr -> INTEGER .
 
@@ -287,7 +280,7 @@ state 12
     RPAREN          reduce using rule 11 (expr -> INTEGER .)
 
 
-state 13
+state 12
 
     (12) expr -> FLOAT .
 
@@ -300,7 +293,7 @@ state 13
     RPAREN          reduce using rule 12 (expr -> FLOAT .)
 
 
-state 14
+state 13
 
     (14) expr -> LPAREN . expr RPAREN
     (6) expr -> . expr PLUS expr
@@ -315,16 +308,16 @@ state 14
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 22
+    expr                           shift and go to state 21
     variable                       shift and go to state 8
 
-state 15
+state 14
 
     (5) statement -> variable error expr .
     (6) expr -> expr . PLUS expr
@@ -334,14 +327,14 @@ state 15
     (10) expr -> expr . POWER expr
 
     $end            reduce using rule 5 (statement -> variable error expr .)
-    PLUS            shift and go to state 16
-    MINUS           shift and go to state 17
-    TIMES           shift and go to state 18
-    DIVIDE          shift and go to state 19
-    POWER           shift and go to state 20
+    PLUS            shift and go to state 15
+    MINUS           shift and go to state 16
+    TIMES           shift and go to state 17
+    DIVIDE          shift and go to state 18
+    POWER           shift and go to state 19
 
 
-state 16
+state 15
 
     (6) expr -> expr PLUS . expr
     (6) expr -> . expr PLUS expr
@@ -356,16 +349,16 @@ state 16
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 23
+    expr                           shift and go to state 22
     variable                       shift and go to state 8
 
-state 17
+state 16
 
     (7) expr -> expr MINUS . expr
     (6) expr -> . expr PLUS expr
@@ -380,16 +373,16 @@ state 17
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 24
+    expr                           shift and go to state 23
     variable                       shift and go to state 8
 
-state 18
+state 17
 
     (8) expr -> expr TIMES . expr
     (6) expr -> . expr PLUS expr
@@ -404,16 +397,16 @@ state 18
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 25
+    expr                           shift and go to state 24
     variable                       shift and go to state 8
 
-state 19
+state 18
 
     (9) expr -> expr DIVIDE . expr
     (6) expr -> . expr PLUS expr
@@ -428,16 +421,16 @@ state 19
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 26
+    expr                           shift and go to state 25
     variable                       shift and go to state 8
 
-state 20
+state 19
 
     (10) expr -> expr POWER . expr
     (6) expr -> . expr PLUS expr
@@ -452,16 +445,16 @@ state 20
     (15) expr -> . MINUS expr
     (22) variable -> . ID
 
-    INTEGER         shift and go to state 12
-    FLOAT           shift and go to state 13
-    LPAREN          shift and go to state 14
-    MINUS           shift and go to state 11
+    INTEGER         shift and go to state 11
+    FLOAT           shift and go to state 12
+    LPAREN          shift and go to state 13
+    MINUS           shift and go to state 10
     ID              shift and go to state 5
 
-    expr                           shift and go to state 27
+    expr                           shift and go to state 26
     variable                       shift and go to state 8
 
-state 21
+state 20
 
     (15) expr -> MINUS expr .
     (6) expr -> expr . PLUS expr
@@ -478,14 +471,14 @@ state 21
     $end            reduce using rule 15 (expr -> MINUS expr .)
     RPAREN          reduce using rule 15 (expr -> MINUS expr .)
 
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
-  ! TIMES           [ shift and go to state 18 ]
-  ! DIVIDE          [ shift and go to state 19 ]
-  ! POWER           [ shift and go to state 20 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
+  ! TIMES           [ shift and go to state 17 ]
+  ! DIVIDE          [ shift and go to state 18 ]
+  ! POWER           [ shift and go to state 19 ]
 
 
-state 22
+state 21
 
     (14) expr -> LPAREN expr . RPAREN
     (6) expr -> expr . PLUS expr
@@ -494,15 +487,15 @@ state 22
     (9) expr -> expr . DIVIDE expr
     (10) expr -> expr . POWER expr
 
-    RPAREN          shift and go to state 28
-    PLUS            shift and go to state 16
-    MINUS           shift and go to state 17
-    TIMES           shift and go to state 18
-    DIVIDE          shift and go to state 19
-    POWER           shift and go to state 20
+    RPAREN          shift and go to state 27
+    PLUS            shift and go to state 15
+    MINUS           shift and go to state 16
+    TIMES           shift and go to state 17
+    DIVIDE          shift and go to state 18
+    POWER           shift and go to state 19
 
 
-state 23
+state 22
 
     (6) expr -> expr PLUS expr .
     (6) expr -> expr . PLUS expr
@@ -515,18 +508,18 @@ state 23
     MINUS           reduce using rule 6 (expr -> expr PLUS expr .)
     $end            reduce using rule 6 (expr -> expr PLUS expr .)
     RPAREN          reduce using rule 6 (expr -> expr PLUS expr .)
-    TIMES           shift and go to state 18
-    DIVIDE          shift and go to state 19
-    POWER           shift and go to state 20
+    TIMES           shift and go to state 17
+    DIVIDE          shift and go to state 18
+    POWER           shift and go to state 19
 
   ! TIMES           [ reduce using rule 6 (expr -> expr PLUS expr .) ]
   ! DIVIDE          [ reduce using rule 6 (expr -> expr PLUS expr .) ]
   ! POWER           [ reduce using rule 6 (expr -> expr PLUS expr .) ]
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
 
 
-state 24
+state 23
 
     (7) expr -> expr MINUS expr .
     (6) expr -> expr . PLUS expr
@@ -539,18 +532,18 @@ state 24
     MINUS           reduce using rule 7 (expr -> expr MINUS expr .)
     $end            reduce using rule 7 (expr -> expr MINUS expr .)
     RPAREN          reduce using rule 7 (expr -> expr MINUS expr .)
-    TIMES           shift and go to state 18
-    DIVIDE          shift and go to state 19
-    POWER           shift and go to state 20
+    TIMES           shift and go to state 17
+    DIVIDE          shift and go to state 18
+    POWER           shift and go to state 19
 
   ! TIMES           [ reduce using rule 7 (expr -> expr MINUS expr .) ]
   ! DIVIDE          [ reduce using rule 7 (expr -> expr MINUS expr .) ]
   ! POWER           [ reduce using rule 7 (expr -> expr MINUS expr .) ]
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
 
 
-state 25
+state 24
 
     (8) expr -> expr TIMES expr .
     (6) expr -> expr . PLUS expr
@@ -565,16 +558,16 @@ state 25
     DIVIDE          reduce using rule 8 (expr -> expr TIMES expr .)
     $end            reduce using rule 8 (expr -> expr TIMES expr .)
     RPAREN          reduce using rule 8 (expr -> expr TIMES expr .)
-    POWER           shift and go to state 20
+    POWER           shift and go to state 19
 
   ! POWER           [ reduce using rule 8 (expr -> expr TIMES expr .) ]
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
-  ! TIMES           [ shift and go to state 18 ]
-  ! DIVIDE          [ shift and go to state 19 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
+  ! TIMES           [ shift and go to state 17 ]
+  ! DIVIDE          [ shift and go to state 18 ]
 
 
-state 26
+state 25
 
     (9) expr -> expr DIVIDE expr .
     (6) expr -> expr . PLUS expr
@@ -589,16 +582,16 @@ state 26
     DIVIDE          reduce using rule 9 (expr -> expr DIVIDE expr .)
     $end            reduce using rule 9 (expr -> expr DIVIDE expr .)
     RPAREN          reduce using rule 9 (expr -> expr DIVIDE expr .)
-    POWER           shift and go to state 20
+    POWER           shift and go to state 19
 
   ! POWER           [ reduce using rule 9 (expr -> expr DIVIDE expr .) ]
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
-  ! TIMES           [ shift and go to state 18 ]
-  ! DIVIDE          [ shift and go to state 19 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
+  ! TIMES           [ shift and go to state 17 ]
+  ! DIVIDE          [ shift and go to state 18 ]
 
 
-state 27
+state 26
 
     (10) expr -> expr POWER expr .
     (6) expr -> expr . PLUS expr
@@ -615,14 +608,14 @@ state 27
     $end            reduce using rule 10 (expr -> expr POWER expr .)
     RPAREN          reduce using rule 10 (expr -> expr POWER expr .)
 
-  ! PLUS            [ shift and go to state 16 ]
-  ! MINUS           [ shift and go to state 17 ]
-  ! TIMES           [ shift and go to state 18 ]
-  ! DIVIDE          [ shift and go to state 19 ]
-  ! POWER           [ shift and go to state 20 ]
+  ! PLUS            [ shift and go to state 15 ]
+  ! MINUS           [ shift and go to state 16 ]
+  ! TIMES           [ shift and go to state 17 ]
+  ! DIVIDE          [ shift and go to state 18 ]
+  ! POWER           [ shift and go to state 19 ]
 
 
-state 28
+state 27
 
     (14) expr -> LPAREN expr RPAREN .
 
