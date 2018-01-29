@@ -9,9 +9,16 @@ precedence = (
     ('right', 'UMINUS')
 )
 
+
+parse_tree = []
+
 def p_program(p):
-    r'''program : statement'''
+    '''program : statement
+                | print_statement
+            '''
     p[0]=p[1]
+    parse_tree.append(p[0])
+    print("p_program reached.") # unreachable.
 def p_program_error(p):
     r'program : error'
     p[0]=p[1]
@@ -20,11 +27,12 @@ def p_statement_id(p):
     r'''statement : variable eq expr
                    '''
     p[0]=('ID',p[1],p[3])
+    # print("p_statement_id reached.")
 
 def p_statement_id_bad(p):
     r'''statement : variable eq
                     | variable error expr'''
-    p[0]='INVALID SYNATX FOR DEFINFING A VARIABLE'
+    p[0]='INVALID SYNTAX FOR DEFINFING A VARIABLE'
 
 # Arithmetic expressions
 
@@ -76,6 +84,11 @@ def p_variable(p):
     '''variable : ID'''
     p[0]=p[1]
 
+def p_print_statement(p):
+    '''print_statement : print variable
+                        | print expr
+                     '''
+    p[0] = ('print', p[2])
 
 def p_error(p):
     if not p:
@@ -93,7 +106,9 @@ def run_parser():
             break
         if not inp:
             continue
-        out=parser.parse(inp)
-        print(out)
+        parser.parse(inp)
+        # print(out)
+        print("Parse tree now: ")
+        print(parse_tree)
 
 parser = yacc.yacc(debug=0)
