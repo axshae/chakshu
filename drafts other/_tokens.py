@@ -10,7 +10,7 @@ tokens = keywords + (
       'COMMA', 'SEMI', 'INTEGER', 'FLOAT', 'STRING',
     'ID', 'NEWLINE','LPAREN','RPAREN'
 )
-t_ignore=' \t'
+t_ignore=' \t \n'
 def t_ID(t):
     r'[A-Z a-z _][A-Z0-9a-z_]*'
     if t.value in keywords:

@@ -102,18 +102,25 @@ def p_print_statement(p):
                      '''
     p[0] = ('print', p[2])
 
-def run_parser():
+def run_parser(code='',exec_by_line=False,enable_input_mode=False):
     intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
     print(intro)
-
     while True:
         try:
-            inp = input('>>> ')
+            if enable_input_mode:
+                code = input('>>> ')
         except EOFError: # so we can exit.
             break
-        if not inp:
+        if not code:
             continue
-        out=parser.parse(inp)
+        if exec_by_line and not enable_input_mode:  # if input mode is enabled input code will be discarded
+            code=code.split('\n')   #last element will always be '' so ignore it
+            for line in code[0:-1]:     #0 to n-2 since n-1 = '' (i.e. EOF list)
+                out=parser.parse(line)
+                print(out)
+            return None
+
+        out=parser.parse(code)      # executing at once and if input mode is anbled
         print(out)
         #print("Parse tree now: ")
         #print(parse_tree)
