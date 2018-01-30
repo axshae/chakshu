@@ -14,25 +14,27 @@ parse_tree = []
 
 def p_program(p):
     '''program : statement
-                | print_statement
             '''
     p[0]=p[1]
-    parse_tree.append(p[0])
-    print("p_program reached.") # unreachable.
+    #parse_tree.append(p[0])
+    #print("p_program reached.") # unreachable.
 def p_program_error(p):
     r'program : error'
     p[0]=p[1]
 
 def p_statement_id(p):
     r'''statement : variable eq expr
+                 | variable eq relexpr
                    '''
     p[0]=('ID',p[1],p[3])
     # print("p_statement_id reached.")
 
 def p_statement_id_bad(p):
     r'''statement : variable eq
-                    | variable error expr'''
+                    | variable error expr
+                    '''
     p[0]='INVALID SYNTAX FOR DEFINFING A VARIABLE'
+
 
 # Arithmetic expressions
 
@@ -48,9 +50,13 @@ def p_expr_binary(p):
 
 def p_expr_number(p):
     '''expr : INTEGER
-            | FLOAT'''
+            | FLOAT
+            '''
     p[0] = ('NUM', p[1])
 
+def p_expr_string(p):
+    'expr : STRING'
+    p[0]=('STR',p[1])
 
 def p_expr_variable(p):
     '''expr : variable'''
@@ -84,16 +90,17 @@ def p_variable(p):
     '''variable : ID'''
     p[0]=p[1]
 
-def p_print_statement(p):
-    '''print_statement : print variable
-                        | print expr
-                     '''
-    p[0] = ('print', p[2])
 
 def p_error(p):
     if not p:
         print("SYNTAX ERROR ")
 
+# Tokens
+def p_print_statement(p):
+    '''print_statement : print variable
+                        | print expr
+                     '''
+    p[0] = ('print', p[2])
 
 def run_parser():
     intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
@@ -106,9 +113,9 @@ def run_parser():
             break
         if not inp:
             continue
-        parser.parse(inp)
-        # print(out)
-        print("Parse tree now: ")
-        print(parse_tree)
+        out=parser.parse(inp)
+        print(out)
+        #print("Parse tree now: ")
+        #print(parse_tree)
 
-parser = yacc.yacc(debug=0)
+parser = yacc.yacc()
