@@ -1,23 +1,9 @@
 import _parser as chakshu
-import sys
-def getCodeFromFile(filePath):
-    if filePath:
-        code=''
-        try:
-            code=open(filePath,'r',encoding='utf-8').read()
-        except Exception as ex:
-            print('Error:%s'%ex)
-            return None
-        #print(code)
-        return code
-    else:
-        print('Error:Program file not specified')
-        return None
-def getFileFromArgs():
-    args=sys.argv[1:]
-    return args[0]
+import util
+filePath=util.get_file_from_args()
+code=''
+if filePath:
+    code=util.get_code_from_file(filePath)
 
-code=getCodeFromFile(getFileFromArgs())
-if code:
-    print(code)
-chakshu.run_parser(code,exec_by_line=True)
+chakshu.run_parser(code)
+#chakshu.run_parser_from_file(util.get_file(filePath))

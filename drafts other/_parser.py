@@ -1,14 +1,16 @@
 from ply import *
 import _tokens
+import util
+import copy
 tokens=_tokens.tokens
-
+_CODE_FILE=open('file.py', 'w+')
+_CODE=[]
 precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE'),
     ('left', 'POWER'),
     ('right', 'UMINUS')
 )
-
 
 parse_tree = []
 
@@ -20,6 +22,7 @@ def p_program(p):
     #print("p_program reached.") # unreachable.
 def p_program_error(p):
     r'program : error'
+    print(p[0])
     p[0]=p[1]
 
 def p_statement_id(p):
@@ -28,12 +31,12 @@ def p_statement_id(p):
                    '''
     p[0]=('ID',p[1],p[3])
     # print("p_statement_id reached.")
-
-def p_statement_id_bad(p):
-    r'''statement : variable eq
-                    | variable error expr
-                    '''
-    p[0]='INVALID SYNTAX FOR DEFINFING A VARIABLE'
+#
+# def p_statement_id_bad(p):
+#     r'''statement : variable eq
+#                     | variable error expr
+#                     '''
+#     p[0]='INVALID SYNTAX FOR DEFINFING A VARIABLE'
 
 
 # Arithmetic expressions
@@ -102,26 +105,66 @@ def p_print_statement(p):
                      '''
     p[0] = ('print', p[2])
 
-def run_parser(code='',exec_by_line=False,enable_input_mode=False):
+
+# #####                 #######
+#       Parser functions      #
+# ####                  #######
+
+def yield_next_line():
+    global  _CODE
+    _CODE=_CODE.split('\n')
+    for code in _CODE:
+        yield code
+
+
+def run_parser_from_file(_file,exec_by_line=False):
     intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
     print(intro)
+    global _CODE_FILE
+    _CODE_FILE=_file
+    #_CODE_FILE= copy.copy(_file)
+    if not _CODE_FILE:
+        print('Error Parse : Unable to open file')
+        pass
     while True:
+        code=''
         try:
-            if enable_input_mode:
-                code = input('>>> ')
-        except EOFError: # so we can exit.
+            code=fetch_next_line()
+            print(code)
+            if code.strip()=='':
+                continue
+            if not code:
+                break
+            out=parser.parse(code)
+            print(out)
+        except EOFError:
             break
-        if not code:
-            continue
-        if exec_by_line and not enable_input_mode:  # if input mode is enabled input code will be discarded
-            code=code.split('\n')   #last element will always be '' so ignore it
-            for line in code[0:-1]:     #0 to n-2 since n-1 = '' (i.e. EOF list)
-                out=parser.parse(line)
-                print(out)
-            return None
 
-        out=parser.parse(code)      # executing at once and if input mode is anbled
-        print(out)
+
+
+def run_parser(code='',enable_input_mode=False):
+    intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
+    print(intro)
+    global _CODE
+    _CODE=code
+    code_next=yield_next_line()
+    while True:
+        if enable_input_mode:
+            try:
+                if enable_input_mode:
+                    code = input('>>> ')
+            except : # so we can exit.
+                break
+        else :
+            try:
+                code=next(code_next)   #last element will always be '' so ignore it
+                if not code :
+                    continue
+                out=parser.parse(code)
+                print(out)
+            except StopIteration:
+                print('\n\nEOP CALL : Program execution completed')
+                return
         #print("Parse tree now: ")
         #print(parse_tree)
 
