@@ -9,7 +9,6 @@ precedence = (
     ('left', 'TIMES', 'DIVIDE'),
     ('left', 'POWER'),
     ('right', 'UMINUS'),
-    ('right','COMMA')
 )
 parse_tree = []
 
@@ -145,38 +144,39 @@ def p_statement_repeat(p):
 
 def p_statement_function(p):
     '''
-    statement : function ID LPAREN args RPAREN then
+    statement : function variable LPAREN args RPAREN then
         '''
-
-    p[0] = ('FUNCTION', p[2], p[4])
     print(p)
+    p[0] = ('FUNCTION', p[2],(p[4]))
 
 def p_statement_function_call(p):
     '''
     statement : ID LPAREN call_args RPAREN
     '''
-    p[0] = ('FUNCTION-CALL', p[1], p[3])
+    p[0] = ('FUNCTION-CALL', p[1],(p[3]))
 
 def p_call_args(p):
     '''
-    call_args : expr
-             |  call_args COMMA call_args
+    call_args : expr COMMA call_args
+             |  expr
     '''
-    if len(p)>1:
-        p[0]=(p[1],p[3])
+    if len(p)>2:    #this fucking was causing error
+        p[0] = p[1] #still have error coz expr is a tuple and didnt have append method
+        p[0].append(p[3])
     else :
-        p[0]=(p[1])
+        p[0]=list(p[1])
 
 def p_args(p):
     '''
-    args : ID
-        | ID COMMA args
-    '''    
-    if len(p)>1:
-        p[0] = (p[1], p[3])
+    args : args COMMA variable
+        | variable
+    '''
+    if len(p)>2:    #this fucking was causing error
+        p[0] = p[1]
+        p[0].append(p[3])
     else:
-        p[0] = (p[1]) 
-       
+        p[0] =[p[1]]
+
 def p_statement_end(p):
     'statement : end'
     p[0]=('END','')
@@ -219,7 +219,7 @@ def yield_next_line():
 
 
 def run_parser(code='',enable_input_mode=False):
-    
+
     global _CODE
     _CODE=code
     code_next=yield_next_line()

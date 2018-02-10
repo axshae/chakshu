@@ -2,18 +2,18 @@ Created by PLY version 3.10 (http://www.dabeaz.com/ply)
 
 Unused terminals:
 
-    ARGS
-    NEWLINE
-    or
-    to
-    in
-    and
-    include
-    SEMI
-    input
-    start
     break
+    in
+    input
+    include
     compile
+    to
+    start
+    and
+    or
+    SEMI
+    NEWLINE
+    ARGS
 
 Grammar
 
@@ -52,21 +52,21 @@ Rule 31    statement -> else if expr then
 Rule 32    statement -> else if relexpr then
 Rule 33    statement -> repeat until relexpr then
 Rule 34    statement -> repeat until expr then
-Rule 35    statement -> function ID LPAREN args RPAREN then
+Rule 35    statement -> function variable LPAREN args RPAREN then
 Rule 36    statement -> ID LPAREN call_args RPAREN
-Rule 37    call_args -> expr
-Rule 38    call_args -> call_args COMMA call_args
-Rule 39    args -> ID
-Rule 40    args -> ID COMMA args
+Rule 37    call_args -> expr COMMA call_args
+Rule 38    call_args -> expr
+Rule 39    args -> args COMMA variable
+Rule 40    args -> variable
 Rule 41    statement -> end
 
 Terminals, with rules where they appear
 
 ARGS                 : 
-COMMA                : 38 40
+COMMA                : 37 39
 DIVIDE               : 11
 FLOAT                : 14
-ID                   : 26 35 36 39 40
+ID                   : 26 36
 INTEGER              : 13
 LPAREN               : 17 25 35 36
 MINUS                : 9 18
@@ -104,13 +104,13 @@ until                : 33 34
 
 Nonterminals, with rules where they appear
 
-args                 : 35 40
-call_args            : 36 38 38
-expr                 : 3 6 8 8 9 9 10 10 11 11 12 12 17 18 19 19 20 20 21 21 22 22 23 23 24 24 27 28 31 34 37
+args                 : 35 39
+call_args            : 36 37
+expr                 : 3 6 8 8 9 9 10 10 11 11 12 12 17 18 19 19 20 20 21 21 22 22 23 23 24 24 27 28 31 34 37 38
 program              : 0
 relexpr              : 4 7 25 29 32 33
 statement            : 1
-variable             : 3 4 5 6 7 16
+variable             : 3 4 5 6 7 16 35 39 40
 
 Parsing method: LALR
 
@@ -132,77 +132,83 @@ state 0
     (32) statement -> . else if relexpr then
     (33) statement -> . repeat until relexpr then
     (34) statement -> . repeat until expr then
-    (35) statement -> . function ID LPAREN args RPAREN then
+    (35) statement -> . function variable LPAREN args RPAREN then
     (36) statement -> . ID LPAREN call_args RPAREN
     (41) statement -> . end
     (26) variable -> . ID
 
-    error           shift and go to state 4
-    print           shift and go to state 9
-    if              shift and go to state 8
+    error           shift and go to state 3
+    print           shift and go to state 5
+    if              shift and go to state 6
     else            shift and go to state 7
-    repeat          shift and go to state 6
-    function        shift and go to state 3
-    ID              shift and go to state 11
-    end             shift and go to state 1
+    repeat          shift and go to state 8
+    function        shift and go to state 9
+    ID              shift and go to state 10
+    end             shift and go to state 11
 
-    statement                      shift and go to state 5
-    program                        shift and go to state 2
-    variable                       shift and go to state 10
+    program                        shift and go to state 1
+    statement                      shift and go to state 2
+    variable                       shift and go to state 4
 
 state 1
-
-    (41) statement -> end .
-
-    $end            reduce using rule 41 (statement -> end .)
-
-
-state 2
 
     (0) S' -> program .
 
 
 
-state 3
-
-    (35) statement -> function . ID LPAREN args RPAREN then
-
-    ID              shift and go to state 12
-
-
-state 4
-
-    (2) program -> error .
-
-    $end            reduce using rule 2 (program -> error .)
-
-
-state 5
+state 2
 
     (1) program -> statement .
 
     $end            reduce using rule 1 (program -> statement .)
 
 
+state 3
+
+    (2) program -> error .
+
+    $end            reduce using rule 2 (program -> error .)
+
+
+state 4
+
+    (3) statement -> variable . eq expr
+    (4) statement -> variable . eq relexpr
+    (5) statement -> variable . eq
+    (6) statement -> variable . error expr
+    (7) statement -> variable . error relexpr
+
+    eq              shift and go to state 12
+    error           shift and go to state 13
+
+
+state 5
+
+    (27) statement -> print . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 14
+    variable                       shift and go to state 19
+
 state 6
-
-    (33) statement -> repeat . until relexpr then
-    (34) statement -> repeat . until expr then
-
-    until           shift and go to state 13
-
-
-state 7
-
-    (30) statement -> else . then
-    (31) statement -> else . if expr then
-    (32) statement -> else . if relexpr then
-
-    then            shift and go to state 14
-    if              shift and go to state 15
-
-
-state 8
 
     (28) statement -> if . expr then
     (29) statement -> if . relexpr then
@@ -226,56 +232,45 @@ state 8
     (25) relexpr -> . LPAREN relexpr RPAREN
     (26) variable -> . ID
 
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 16
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 24
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 22
-    expr                           shift and go to state 21
+    expr                           shift and go to state 22
+    relexpr                        shift and go to state 23
+    variable                       shift and go to state 19
+
+state 7
+
+    (30) statement -> else . then
+    (31) statement -> else . if expr then
+    (32) statement -> else . if relexpr then
+
+    then            shift and go to state 25
+    if              shift and go to state 26
+
+
+state 8
+
+    (33) statement -> repeat . until relexpr then
+    (34) statement -> repeat . until expr then
+
+    until           shift and go to state 27
+
 
 state 9
 
-    (27) statement -> print . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
+    (35) statement -> function . variable LPAREN args RPAREN then
     (26) variable -> . ID
 
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
-    expr                           shift and go to state 26
+    variable                       shift and go to state 28
 
 state 10
-
-    (3) statement -> variable . eq expr
-    (4) statement -> variable . eq relexpr
-    (5) statement -> variable . eq
-    (6) statement -> variable . error expr
-    (7) statement -> variable . error relexpr
-
-    eq              shift and go to state 28
-    error           shift and go to state 27
-
-
-state 11
 
     (36) statement -> ID . LPAREN call_args RPAREN
     (26) variable -> ID .
@@ -285,371 +280,14 @@ state 11
     error           reduce using rule 26 (variable -> ID .)
 
 
+state 11
+
+    (41) statement -> end .
+
+    $end            reduce using rule 41 (statement -> end .)
+
+
 state 12
-
-    (35) statement -> function ID . LPAREN args RPAREN then
-
-    LPAREN          shift and go to state 30
-
-
-state 13
-
-    (33) statement -> repeat until . relexpr then
-    (34) statement -> repeat until . expr then
-    (19) relexpr -> . expr lt expr
-    (20) relexpr -> . expr le expr
-    (21) relexpr -> . expr gt expr
-    (22) relexpr -> . expr ge expr
-    (23) relexpr -> . expr eq expr
-    (24) relexpr -> . expr ne expr
-    (25) relexpr -> . LPAREN relexpr RPAREN
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    LPAREN          shift and go to state 33
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 31
-    expr                           shift and go to state 32
-
-state 14
-
-    (30) statement -> else then .
-
-    $end            reduce using rule 30 (statement -> else then .)
-
-
-state 15
-
-    (31) statement -> else if . expr then
-    (32) statement -> else if . relexpr then
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (19) relexpr -> . expr lt expr
-    (20) relexpr -> . expr le expr
-    (21) relexpr -> . expr gt expr
-    (22) relexpr -> . expr ge expr
-    (23) relexpr -> . expr eq expr
-    (24) relexpr -> . expr ne expr
-    (25) relexpr -> . LPAREN relexpr RPAREN
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 16
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 35
-    expr                           shift and go to state 34
-
-state 16
-
-    (17) expr -> LPAREN . expr RPAREN
-    (25) relexpr -> LPAREN . relexpr RPAREN
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (19) relexpr -> . expr lt expr
-    (20) relexpr -> . expr le expr
-    (21) relexpr -> . expr gt expr
-    (22) relexpr -> . expr ge expr
-    (23) relexpr -> . expr eq expr
-    (24) relexpr -> . expr ne expr
-    (25) relexpr -> . LPAREN relexpr RPAREN
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 16
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 36
-    expr                           shift and go to state 37
-
-state 17
-
-    (13) expr -> INTEGER .
-
-    PLUS            reduce using rule 13 (expr -> INTEGER .)
-    MINUS           reduce using rule 13 (expr -> INTEGER .)
-    TIMES           reduce using rule 13 (expr -> INTEGER .)
-    DIVIDE          reduce using rule 13 (expr -> INTEGER .)
-    POWER           reduce using rule 13 (expr -> INTEGER .)
-    RPAREN          reduce using rule 13 (expr -> INTEGER .)
-    COMMA           reduce using rule 13 (expr -> INTEGER .)
-    lt              reduce using rule 13 (expr -> INTEGER .)
-    le              reduce using rule 13 (expr -> INTEGER .)
-    gt              reduce using rule 13 (expr -> INTEGER .)
-    ge              reduce using rule 13 (expr -> INTEGER .)
-    eq              reduce using rule 13 (expr -> INTEGER .)
-    ne              reduce using rule 13 (expr -> INTEGER .)
-    then            reduce using rule 13 (expr -> INTEGER .)
-    $end            reduce using rule 13 (expr -> INTEGER .)
-
-
-state 18
-
-    (14) expr -> FLOAT .
-
-    PLUS            reduce using rule 14 (expr -> FLOAT .)
-    MINUS           reduce using rule 14 (expr -> FLOAT .)
-    TIMES           reduce using rule 14 (expr -> FLOAT .)
-    DIVIDE          reduce using rule 14 (expr -> FLOAT .)
-    POWER           reduce using rule 14 (expr -> FLOAT .)
-    RPAREN          reduce using rule 14 (expr -> FLOAT .)
-    COMMA           reduce using rule 14 (expr -> FLOAT .)
-    lt              reduce using rule 14 (expr -> FLOAT .)
-    le              reduce using rule 14 (expr -> FLOAT .)
-    gt              reduce using rule 14 (expr -> FLOAT .)
-    ge              reduce using rule 14 (expr -> FLOAT .)
-    eq              reduce using rule 14 (expr -> FLOAT .)
-    ne              reduce using rule 14 (expr -> FLOAT .)
-    then            reduce using rule 14 (expr -> FLOAT .)
-    $end            reduce using rule 14 (expr -> FLOAT .)
-
-
-state 19
-
-    (15) expr -> STRING .
-
-    PLUS            reduce using rule 15 (expr -> STRING .)
-    MINUS           reduce using rule 15 (expr -> STRING .)
-    TIMES           reduce using rule 15 (expr -> STRING .)
-    DIVIDE          reduce using rule 15 (expr -> STRING .)
-    POWER           reduce using rule 15 (expr -> STRING .)
-    RPAREN          reduce using rule 15 (expr -> STRING .)
-    COMMA           reduce using rule 15 (expr -> STRING .)
-    lt              reduce using rule 15 (expr -> STRING .)
-    le              reduce using rule 15 (expr -> STRING .)
-    gt              reduce using rule 15 (expr -> STRING .)
-    ge              reduce using rule 15 (expr -> STRING .)
-    eq              reduce using rule 15 (expr -> STRING .)
-    ne              reduce using rule 15 (expr -> STRING .)
-    then            reduce using rule 15 (expr -> STRING .)
-    $end            reduce using rule 15 (expr -> STRING .)
-
-
-state 20
-
-    (26) variable -> ID .
-
-    then            reduce using rule 26 (variable -> ID .)
-    PLUS            reduce using rule 26 (variable -> ID .)
-    MINUS           reduce using rule 26 (variable -> ID .)
-    TIMES           reduce using rule 26 (variable -> ID .)
-    DIVIDE          reduce using rule 26 (variable -> ID .)
-    POWER           reduce using rule 26 (variable -> ID .)
-    lt              reduce using rule 26 (variable -> ID .)
-    le              reduce using rule 26 (variable -> ID .)
-    gt              reduce using rule 26 (variable -> ID .)
-    ge              reduce using rule 26 (variable -> ID .)
-    eq              reduce using rule 26 (variable -> ID .)
-    ne              reduce using rule 26 (variable -> ID .)
-    RPAREN          reduce using rule 26 (variable -> ID .)
-    $end            reduce using rule 26 (variable -> ID .)
-    COMMA           reduce using rule 26 (variable -> ID .)
-
-
-state 21
-
-    (28) statement -> if expr . then
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
-
-    then            shift and go to state 47
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-
-
-state 22
-
-    (29) statement -> if relexpr . then
-
-    then            shift and go to state 50
-
-
-state 23
-
-    (16) expr -> variable .
-
-    PLUS            reduce using rule 16 (expr -> variable .)
-    MINUS           reduce using rule 16 (expr -> variable .)
-    TIMES           reduce using rule 16 (expr -> variable .)
-    DIVIDE          reduce using rule 16 (expr -> variable .)
-    POWER           reduce using rule 16 (expr -> variable .)
-    RPAREN          reduce using rule 16 (expr -> variable .)
-    COMMA           reduce using rule 16 (expr -> variable .)
-    lt              reduce using rule 16 (expr -> variable .)
-    le              reduce using rule 16 (expr -> variable .)
-    gt              reduce using rule 16 (expr -> variable .)
-    ge              reduce using rule 16 (expr -> variable .)
-    eq              reduce using rule 16 (expr -> variable .)
-    ne              reduce using rule 16 (expr -> variable .)
-    then            reduce using rule 16 (expr -> variable .)
-    $end            reduce using rule 16 (expr -> variable .)
-
-
-state 24
-
-    (18) expr -> MINUS . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 51
-
-state 25
-
-    (17) expr -> LPAREN . expr RPAREN
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 52
-
-state 26
-
-    (27) statement -> print expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    $end            reduce using rule 27 (statement -> print expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 27
-
-    (6) statement -> variable error . expr
-    (7) statement -> variable error . relexpr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (19) relexpr -> . expr lt expr
-    (20) relexpr -> . expr le expr
-    (21) relexpr -> . expr gt expr
-    (22) relexpr -> . expr ge expr
-    (23) relexpr -> . expr eq expr
-    (24) relexpr -> . expr ne expr
-    (25) relexpr -> . LPAREN relexpr RPAREN
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 16
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 53
-    expr                           shift and go to state 54
-
-state 28
 
     (3) statement -> variable eq . expr
     (4) statement -> variable eq . relexpr
@@ -675,22 +313,72 @@ state 28
     (26) variable -> . ID
 
     $end            reduce using rule 5 (statement -> variable eq .)
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 16
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 24
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 55
-    expr                           shift and go to state 56
+    variable                       shift and go to state 19
+    expr                           shift and go to state 30
+    relexpr                        shift and go to state 31
 
-state 29
+state 13
 
-    (36) statement -> ID LPAREN . call_args RPAREN
-    (37) call_args -> . expr
-    (38) call_args -> . call_args COMMA call_args
+    (6) statement -> variable error . expr
+    (7) statement -> variable error . relexpr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (19) relexpr -> . expr lt expr
+    (20) relexpr -> . expr le expr
+    (21) relexpr -> . expr gt expr
+    (22) relexpr -> . expr ge expr
+    (23) relexpr -> . expr eq expr
+    (24) relexpr -> . expr ne expr
+    (25) relexpr -> . LPAREN relexpr RPAREN
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 24
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    variable                       shift and go to state 19
+    expr                           shift and go to state 32
+    relexpr                        shift and go to state 33
+
+state 14
+
+    (27) statement -> print expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    $end            reduce using rule 27 (statement -> print expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 15
+
+    (18) expr -> MINUS . expr
     (8) expr -> . expr PLUS expr
     (9) expr -> . expr MINUS expr
     (10) expr -> . expr TIMES expr
@@ -704,35 +392,833 @@ state 29
     (18) expr -> . MINUS expr
     (26) variable -> . ID
 
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
+    expr                           shift and go to state 39
+    variable                       shift and go to state 19
+
+state 16
+
+    (13) expr -> INTEGER .
+
+    PLUS            reduce using rule 13 (expr -> INTEGER .)
+    MINUS           reduce using rule 13 (expr -> INTEGER .)
+    TIMES           reduce using rule 13 (expr -> INTEGER .)
+    DIVIDE          reduce using rule 13 (expr -> INTEGER .)
+    POWER           reduce using rule 13 (expr -> INTEGER .)
+    $end            reduce using rule 13 (expr -> INTEGER .)
+    then            reduce using rule 13 (expr -> INTEGER .)
+    lt              reduce using rule 13 (expr -> INTEGER .)
+    le              reduce using rule 13 (expr -> INTEGER .)
+    gt              reduce using rule 13 (expr -> INTEGER .)
+    ge              reduce using rule 13 (expr -> INTEGER .)
+    eq              reduce using rule 13 (expr -> INTEGER .)
+    ne              reduce using rule 13 (expr -> INTEGER .)
+    RPAREN          reduce using rule 13 (expr -> INTEGER .)
+    COMMA           reduce using rule 13 (expr -> INTEGER .)
+
+
+state 17
+
+    (14) expr -> FLOAT .
+
+    PLUS            reduce using rule 14 (expr -> FLOAT .)
+    MINUS           reduce using rule 14 (expr -> FLOAT .)
+    TIMES           reduce using rule 14 (expr -> FLOAT .)
+    DIVIDE          reduce using rule 14 (expr -> FLOAT .)
+    POWER           reduce using rule 14 (expr -> FLOAT .)
+    $end            reduce using rule 14 (expr -> FLOAT .)
+    then            reduce using rule 14 (expr -> FLOAT .)
+    lt              reduce using rule 14 (expr -> FLOAT .)
+    le              reduce using rule 14 (expr -> FLOAT .)
+    gt              reduce using rule 14 (expr -> FLOAT .)
+    ge              reduce using rule 14 (expr -> FLOAT .)
+    eq              reduce using rule 14 (expr -> FLOAT .)
+    ne              reduce using rule 14 (expr -> FLOAT .)
+    RPAREN          reduce using rule 14 (expr -> FLOAT .)
+    COMMA           reduce using rule 14 (expr -> FLOAT .)
+
+
+state 18
+
+    (15) expr -> STRING .
+
+    PLUS            reduce using rule 15 (expr -> STRING .)
+    MINUS           reduce using rule 15 (expr -> STRING .)
+    TIMES           reduce using rule 15 (expr -> STRING .)
+    DIVIDE          reduce using rule 15 (expr -> STRING .)
+    POWER           reduce using rule 15 (expr -> STRING .)
+    $end            reduce using rule 15 (expr -> STRING .)
+    then            reduce using rule 15 (expr -> STRING .)
+    lt              reduce using rule 15 (expr -> STRING .)
+    le              reduce using rule 15 (expr -> STRING .)
+    gt              reduce using rule 15 (expr -> STRING .)
+    ge              reduce using rule 15 (expr -> STRING .)
+    eq              reduce using rule 15 (expr -> STRING .)
+    ne              reduce using rule 15 (expr -> STRING .)
+    RPAREN          reduce using rule 15 (expr -> STRING .)
+    COMMA           reduce using rule 15 (expr -> STRING .)
+
+
+state 19
+
+    (16) expr -> variable .
+
+    PLUS            reduce using rule 16 (expr -> variable .)
+    MINUS           reduce using rule 16 (expr -> variable .)
+    TIMES           reduce using rule 16 (expr -> variable .)
+    DIVIDE          reduce using rule 16 (expr -> variable .)
+    POWER           reduce using rule 16 (expr -> variable .)
+    $end            reduce using rule 16 (expr -> variable .)
+    then            reduce using rule 16 (expr -> variable .)
+    lt              reduce using rule 16 (expr -> variable .)
+    le              reduce using rule 16 (expr -> variable .)
+    gt              reduce using rule 16 (expr -> variable .)
+    ge              reduce using rule 16 (expr -> variable .)
+    eq              reduce using rule 16 (expr -> variable .)
+    ne              reduce using rule 16 (expr -> variable .)
+    RPAREN          reduce using rule 16 (expr -> variable .)
+    COMMA           reduce using rule 16 (expr -> variable .)
+
+
+state 20
+
+    (17) expr -> LPAREN . expr RPAREN
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 40
+    variable                       shift and go to state 19
+
+state 21
+
+    (26) variable -> ID .
+
+    PLUS            reduce using rule 26 (variable -> ID .)
+    MINUS           reduce using rule 26 (variable -> ID .)
+    TIMES           reduce using rule 26 (variable -> ID .)
+    DIVIDE          reduce using rule 26 (variable -> ID .)
+    POWER           reduce using rule 26 (variable -> ID .)
+    $end            reduce using rule 26 (variable -> ID .)
+    then            reduce using rule 26 (variable -> ID .)
+    lt              reduce using rule 26 (variable -> ID .)
+    le              reduce using rule 26 (variable -> ID .)
+    gt              reduce using rule 26 (variable -> ID .)
+    ge              reduce using rule 26 (variable -> ID .)
+    eq              reduce using rule 26 (variable -> ID .)
+    ne              reduce using rule 26 (variable -> ID .)
+    LPAREN          reduce using rule 26 (variable -> ID .)
+    RPAREN          reduce using rule 26 (variable -> ID .)
+    COMMA           reduce using rule 26 (variable -> ID .)
+
+
+state 22
+
+    (28) statement -> if expr . then
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
+
+    then            shift and go to state 41
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+
+
+state 23
+
+    (29) statement -> if relexpr . then
+
+    then            shift and go to state 48
+
+
+state 24
+
+    (17) expr -> LPAREN . expr RPAREN
+    (25) relexpr -> LPAREN . relexpr RPAREN
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (19) relexpr -> . expr lt expr
+    (20) relexpr -> . expr le expr
+    (21) relexpr -> . expr gt expr
+    (22) relexpr -> . expr ge expr
+    (23) relexpr -> . expr eq expr
+    (24) relexpr -> . expr ne expr
+    (25) relexpr -> . LPAREN relexpr RPAREN
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 24
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 49
+    relexpr                        shift and go to state 50
+    variable                       shift and go to state 19
+
+state 25
+
+    (30) statement -> else then .
+
+    $end            reduce using rule 30 (statement -> else then .)
+
+
+state 26
+
+    (31) statement -> else if . expr then
+    (32) statement -> else if . relexpr then
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (19) relexpr -> . expr lt expr
+    (20) relexpr -> . expr le expr
+    (21) relexpr -> . expr gt expr
+    (22) relexpr -> . expr ge expr
+    (23) relexpr -> . expr eq expr
+    (24) relexpr -> . expr ne expr
+    (25) relexpr -> . LPAREN relexpr RPAREN
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 24
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 51
+    relexpr                        shift and go to state 52
+    variable                       shift and go to state 19
+
+state 27
+
+    (33) statement -> repeat until . relexpr then
+    (34) statement -> repeat until . expr then
+    (19) relexpr -> . expr lt expr
+    (20) relexpr -> . expr le expr
+    (21) relexpr -> . expr gt expr
+    (22) relexpr -> . expr ge expr
+    (23) relexpr -> . expr eq expr
+    (24) relexpr -> . expr ne expr
+    (25) relexpr -> . LPAREN relexpr RPAREN
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    LPAREN          shift and go to state 55
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    relexpr                        shift and go to state 53
+    expr                           shift and go to state 54
+    variable                       shift and go to state 19
+
+state 28
+
+    (35) statement -> function variable . LPAREN args RPAREN then
+
+    LPAREN          shift and go to state 56
+
+
+state 29
+
+    (36) statement -> ID LPAREN . call_args RPAREN
+    (37) call_args -> . expr COMMA call_args
+    (38) call_args -> . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
     call_args                      shift and go to state 57
     expr                           shift and go to state 58
+    variable                       shift and go to state 19
 
 state 30
 
-    (35) statement -> function ID LPAREN . args RPAREN then
-    (39) args -> . ID
-    (40) args -> . ID COMMA args
+    (3) statement -> variable eq expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
 
-    ID              shift and go to state 60
+    $end            reduce using rule 3 (statement -> variable eq expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
 
-    args                           shift and go to state 59
 
 state 31
 
-    (33) statement -> repeat until relexpr . then
+    (4) statement -> variable eq relexpr .
 
-    then            shift and go to state 61
+    $end            reduce using rule 4 (statement -> variable eq relexpr .)
 
 
 state 32
+
+    (6) statement -> variable error expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
+
+    $end            reduce using rule 6 (statement -> variable error expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+
+
+state 33
+
+    (7) statement -> variable error relexpr .
+
+    $end            reduce using rule 7 (statement -> variable error relexpr .)
+
+
+state 34
+
+    (8) expr -> expr PLUS . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 59
+    variable                       shift and go to state 19
+
+state 35
+
+    (9) expr -> expr MINUS . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 60
+    variable                       shift and go to state 19
+
+state 36
+
+    (10) expr -> expr TIMES . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 61
+    variable                       shift and go to state 19
+
+state 37
+
+    (11) expr -> expr DIVIDE . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 62
+    variable                       shift and go to state 19
+
+state 38
+
+    (12) expr -> expr POWER . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 63
+    variable                       shift and go to state 19
+
+state 39
+
+    (18) expr -> MINUS expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    PLUS            reduce using rule 18 (expr -> MINUS expr .)
+    MINUS           reduce using rule 18 (expr -> MINUS expr .)
+    TIMES           reduce using rule 18 (expr -> MINUS expr .)
+    DIVIDE          reduce using rule 18 (expr -> MINUS expr .)
+    POWER           reduce using rule 18 (expr -> MINUS expr .)
+    $end            reduce using rule 18 (expr -> MINUS expr .)
+    then            reduce using rule 18 (expr -> MINUS expr .)
+    lt              reduce using rule 18 (expr -> MINUS expr .)
+    le              reduce using rule 18 (expr -> MINUS expr .)
+    gt              reduce using rule 18 (expr -> MINUS expr .)
+    ge              reduce using rule 18 (expr -> MINUS expr .)
+    eq              reduce using rule 18 (expr -> MINUS expr .)
+    ne              reduce using rule 18 (expr -> MINUS expr .)
+    RPAREN          reduce using rule 18 (expr -> MINUS expr .)
+    COMMA           reduce using rule 18 (expr -> MINUS expr .)
+
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
+  ! POWER           [ shift and go to state 38 ]
+
+
+state 40
+
+    (17) expr -> LPAREN expr . RPAREN
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    RPAREN          shift and go to state 64
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 41
+
+    (28) statement -> if expr then .
+
+    $end            reduce using rule 28 (statement -> if expr then .)
+
+
+state 42
+
+    (19) relexpr -> expr lt . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 65
+    variable                       shift and go to state 19
+
+state 43
+
+    (20) relexpr -> expr le . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 66
+    variable                       shift and go to state 19
+
+state 44
+
+    (21) relexpr -> expr gt . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 67
+    variable                       shift and go to state 19
+
+state 45
+
+    (22) relexpr -> expr ge . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 68
+    variable                       shift and go to state 19
+
+state 46
+
+    (23) relexpr -> expr eq . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 69
+    variable                       shift and go to state 19
+
+state 47
+
+    (24) relexpr -> expr ne . expr
+    (8) expr -> . expr PLUS expr
+    (9) expr -> . expr MINUS expr
+    (10) expr -> . expr TIMES expr
+    (11) expr -> . expr DIVIDE expr
+    (12) expr -> . expr POWER expr
+    (13) expr -> . INTEGER
+    (14) expr -> . FLOAT
+    (15) expr -> . STRING
+    (16) expr -> . variable
+    (17) expr -> . LPAREN expr RPAREN
+    (18) expr -> . MINUS expr
+    (26) variable -> . ID
+
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
+
+    expr                           shift and go to state 70
+    variable                       shift and go to state 19
+
+state 48
+
+    (29) statement -> if relexpr then .
+
+    $end            reduce using rule 29 (statement -> if relexpr then .)
+
+
+state 49
+
+    (17) expr -> LPAREN expr . RPAREN
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
+
+    RPAREN          shift and go to state 64
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+
+
+state 50
+
+    (25) relexpr -> LPAREN relexpr . RPAREN
+
+    RPAREN          shift and go to state 71
+
+
+state 51
+
+    (31) statement -> else if expr . then
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
+
+    then            shift and go to state 72
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+
+
+state 52
+
+    (32) statement -> else if relexpr . then
+
+    then            shift and go to state 73
+
+
+state 53
+
+    (33) statement -> repeat until relexpr . then
+
+    then            shift and go to state 74
+
+
+state 54
 
     (34) statement -> repeat until expr . then
     (19) relexpr -> expr . lt expr
@@ -747,21 +1233,21 @@ state 32
     (11) expr -> expr . DIVIDE expr
     (12) expr -> expr . POWER expr
 
-    then            shift and go to state 62
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    then            shift and go to state 75
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
 
 
-state 33
+state 55
 
     (25) relexpr -> LPAREN . relexpr RPAREN
     (17) expr -> LPAREN . expr RPAREN
@@ -785,641 +1271,56 @@ state 33
     (18) expr -> . MINUS expr
     (26) variable -> . ID
 
-    LPAREN          shift and go to state 33
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    LPAREN          shift and go to state 55
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
-    relexpr                        shift and go to state 36
-    expr                           shift and go to state 63
-
-state 34
-
-    (31) statement -> else if expr . then
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
-
-    then            shift and go to state 64
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-
-
-state 35
-
-    (32) statement -> else if relexpr . then
-
-    then            shift and go to state 65
-
-
-state 36
-
-    (25) relexpr -> LPAREN relexpr . RPAREN
-
-    RPAREN          shift and go to state 66
-
-
-state 37
-
-    (17) expr -> LPAREN expr . RPAREN
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
-
-    RPAREN          shift and go to state 67
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-
-
-state 38
-
-    (8) expr -> expr PLUS . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 68
-
-state 39
-
-    (21) relexpr -> expr gt . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 69
-
-state 40
-
-    (11) expr -> expr DIVIDE . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 70
-
-state 41
-
-    (20) relexpr -> expr le . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 71
-
-state 42
-
-    (23) relexpr -> expr eq . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 72
-
-state 43
-
-    (12) expr -> expr POWER . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 73
-
-state 44
-
-    (22) relexpr -> expr ge . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 74
-
-state 45
-
-    (24) relexpr -> expr ne . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 75
-
-state 46
-
-    (10) expr -> expr TIMES . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
+    relexpr                        shift and go to state 50
     expr                           shift and go to state 76
-
-state 47
-
-    (28) statement -> if expr then .
-
-    $end            reduce using rule 28 (statement -> if expr then .)
-
-
-state 48
-
-    (19) relexpr -> expr lt . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 77
-
-state 49
-
-    (9) expr -> expr MINUS . expr
-    (8) expr -> . expr PLUS expr
-    (9) expr -> . expr MINUS expr
-    (10) expr -> . expr TIMES expr
-    (11) expr -> . expr DIVIDE expr
-    (12) expr -> . expr POWER expr
-    (13) expr -> . INTEGER
-    (14) expr -> . FLOAT
-    (15) expr -> . STRING
-    (16) expr -> . variable
-    (17) expr -> . LPAREN expr RPAREN
-    (18) expr -> . MINUS expr
-    (26) variable -> . ID
-
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
-
-    variable                       shift and go to state 23
-    expr                           shift and go to state 78
-
-state 50
-
-    (29) statement -> if relexpr then .
-
-    $end            reduce using rule 29 (statement -> if relexpr then .)
-
-
-state 51
-
-    (18) expr -> MINUS expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    PLUS            reduce using rule 18 (expr -> MINUS expr .)
-    MINUS           reduce using rule 18 (expr -> MINUS expr .)
-    TIMES           reduce using rule 18 (expr -> MINUS expr .)
-    DIVIDE          reduce using rule 18 (expr -> MINUS expr .)
-    POWER           reduce using rule 18 (expr -> MINUS expr .)
-    RPAREN          reduce using rule 18 (expr -> MINUS expr .)
-    COMMA           reduce using rule 18 (expr -> MINUS expr .)
-    lt              reduce using rule 18 (expr -> MINUS expr .)
-    le              reduce using rule 18 (expr -> MINUS expr .)
-    gt              reduce using rule 18 (expr -> MINUS expr .)
-    ge              reduce using rule 18 (expr -> MINUS expr .)
-    eq              reduce using rule 18 (expr -> MINUS expr .)
-    ne              reduce using rule 18 (expr -> MINUS expr .)
-    then            reduce using rule 18 (expr -> MINUS expr .)
-    $end            reduce using rule 18 (expr -> MINUS expr .)
-
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
-  ! TIMES           [ shift and go to state 46 ]
-  ! DIVIDE          [ shift and go to state 40 ]
-  ! POWER           [ shift and go to state 43 ]
-
-
-state 52
-
-    (17) expr -> LPAREN expr . RPAREN
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    RPAREN          shift and go to state 67
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 53
-
-    (7) statement -> variable error relexpr .
-
-    $end            reduce using rule 7 (statement -> variable error relexpr .)
-
-
-state 54
-
-    (6) statement -> variable error expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
-
-    $end            reduce using rule 6 (statement -> variable error expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-
-
-state 55
-
-    (4) statement -> variable eq relexpr .
-
-    $end            reduce using rule 4 (statement -> variable eq relexpr .)
-
+    variable                       shift and go to state 19
 
 state 56
 
-    (3) statement -> variable eq expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
+    (35) statement -> function variable LPAREN . args RPAREN then
+    (39) args -> . args COMMA variable
+    (40) args -> . variable
+    (26) variable -> . ID
 
-    $end            reduce using rule 3 (statement -> variable eq expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
+    ID              shift and go to state 21
 
+    variable                       shift and go to state 77
+    args                           shift and go to state 78
 
 state 57
 
     (36) statement -> ID LPAREN call_args . RPAREN
-    (38) call_args -> call_args . COMMA call_args
 
     RPAREN          shift and go to state 79
-    COMMA           shift and go to state 80
 
 
 state 58
 
-    (37) call_args -> expr .
+    (37) call_args -> expr . COMMA call_args
+    (38) call_args -> expr .
     (8) expr -> expr . PLUS expr
     (9) expr -> expr . MINUS expr
     (10) expr -> expr . TIMES expr
     (11) expr -> expr . DIVIDE expr
     (12) expr -> expr . POWER expr
 
-    COMMA           reduce using rule 37 (call_args -> expr .)
-    RPAREN          reduce using rule 37 (call_args -> expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    COMMA           shift and go to state 80
+    RPAREN          reduce using rule 38 (call_args -> expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
 
 
 state 59
-
-    (35) statement -> function ID LPAREN args . RPAREN then
-
-    RPAREN          shift and go to state 81
-
-
-state 60
-
-    (39) args -> ID .
-    (40) args -> ID . COMMA args
-
-    RPAREN          reduce using rule 39 (args -> ID .)
-    COMMA           shift and go to state 82
-
-
-state 61
-
-    (33) statement -> repeat until relexpr then .
-
-    $end            reduce using rule 33 (statement -> repeat until relexpr then .)
-
-
-state 62
-
-    (34) statement -> repeat until expr then .
-
-    $end            reduce using rule 34 (statement -> repeat until expr then .)
-
-
-state 63
-
-    (17) expr -> LPAREN expr . RPAREN
-    (19) relexpr -> expr . lt expr
-    (20) relexpr -> expr . le expr
-    (21) relexpr -> expr . gt expr
-    (22) relexpr -> expr . ge expr
-    (23) relexpr -> expr . eq expr
-    (24) relexpr -> expr . ne expr
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    RPAREN          shift and go to state 67
-    lt              shift and go to state 48
-    le              shift and go to state 41
-    gt              shift and go to state 39
-    ge              shift and go to state 44
-    eq              shift and go to state 42
-    ne              shift and go to state 45
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 64
-
-    (31) statement -> else if expr then .
-
-    $end            reduce using rule 31 (statement -> else if expr then .)
-
-
-state 65
-
-    (32) statement -> else if relexpr then .
-
-    $end            reduce using rule 32 (statement -> else if relexpr then .)
-
-
-state 66
-
-    (25) relexpr -> LPAREN relexpr RPAREN .
-
-    RPAREN          reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
-    then            reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
-    $end            reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
-
-
-state 67
-
-    (17) expr -> LPAREN expr RPAREN .
-
-    PLUS            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    MINUS           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    TIMES           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    DIVIDE          reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    POWER           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    RPAREN          reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    COMMA           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    lt              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    le              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    gt              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    ge              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    eq              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    ne              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    then            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-    $end            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
-
-
-state 68
 
     (8) expr -> expr PLUS expr .
     (8) expr -> expr . PLUS expr
@@ -1430,47 +1331,92 @@ state 68
 
     PLUS            reduce using rule 8 (expr -> expr PLUS expr .)
     MINUS           reduce using rule 8 (expr -> expr PLUS expr .)
-    RPAREN          reduce using rule 8 (expr -> expr PLUS expr .)
-    COMMA           reduce using rule 8 (expr -> expr PLUS expr .)
+    $end            reduce using rule 8 (expr -> expr PLUS expr .)
+    then            reduce using rule 8 (expr -> expr PLUS expr .)
     lt              reduce using rule 8 (expr -> expr PLUS expr .)
     le              reduce using rule 8 (expr -> expr PLUS expr .)
     gt              reduce using rule 8 (expr -> expr PLUS expr .)
     ge              reduce using rule 8 (expr -> expr PLUS expr .)
     eq              reduce using rule 8 (expr -> expr PLUS expr .)
     ne              reduce using rule 8 (expr -> expr PLUS expr .)
-    then            reduce using rule 8 (expr -> expr PLUS expr .)
-    $end            reduce using rule 8 (expr -> expr PLUS expr .)
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    RPAREN          reduce using rule 8 (expr -> expr PLUS expr .)
+    COMMA           reduce using rule 8 (expr -> expr PLUS expr .)
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
 
   ! TIMES           [ reduce using rule 8 (expr -> expr PLUS expr .) ]
   ! DIVIDE          [ reduce using rule 8 (expr -> expr PLUS expr .) ]
   ! POWER           [ reduce using rule 8 (expr -> expr PLUS expr .) ]
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
 
 
-state 69
+state 60
 
-    (21) relexpr -> expr gt expr .
+    (9) expr -> expr MINUS expr .
     (8) expr -> expr . PLUS expr
     (9) expr -> expr . MINUS expr
     (10) expr -> expr . TIMES expr
     (11) expr -> expr . DIVIDE expr
     (12) expr -> expr . POWER expr
 
-    RPAREN          reduce using rule 21 (relexpr -> expr gt expr .)
-    then            reduce using rule 21 (relexpr -> expr gt expr .)
-    $end            reduce using rule 21 (relexpr -> expr gt expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    PLUS            reduce using rule 9 (expr -> expr MINUS expr .)
+    MINUS           reduce using rule 9 (expr -> expr MINUS expr .)
+    $end            reduce using rule 9 (expr -> expr MINUS expr .)
+    then            reduce using rule 9 (expr -> expr MINUS expr .)
+    lt              reduce using rule 9 (expr -> expr MINUS expr .)
+    le              reduce using rule 9 (expr -> expr MINUS expr .)
+    gt              reduce using rule 9 (expr -> expr MINUS expr .)
+    ge              reduce using rule 9 (expr -> expr MINUS expr .)
+    eq              reduce using rule 9 (expr -> expr MINUS expr .)
+    ne              reduce using rule 9 (expr -> expr MINUS expr .)
+    RPAREN          reduce using rule 9 (expr -> expr MINUS expr .)
+    COMMA           reduce using rule 9 (expr -> expr MINUS expr .)
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+  ! TIMES           [ reduce using rule 9 (expr -> expr MINUS expr .) ]
+  ! DIVIDE          [ reduce using rule 9 (expr -> expr MINUS expr .) ]
+  ! POWER           [ reduce using rule 9 (expr -> expr MINUS expr .) ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
 
 
-state 70
+state 61
+
+    (10) expr -> expr TIMES expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    PLUS            reduce using rule 10 (expr -> expr TIMES expr .)
+    MINUS           reduce using rule 10 (expr -> expr TIMES expr .)
+    TIMES           reduce using rule 10 (expr -> expr TIMES expr .)
+    DIVIDE          reduce using rule 10 (expr -> expr TIMES expr .)
+    $end            reduce using rule 10 (expr -> expr TIMES expr .)
+    then            reduce using rule 10 (expr -> expr TIMES expr .)
+    lt              reduce using rule 10 (expr -> expr TIMES expr .)
+    le              reduce using rule 10 (expr -> expr TIMES expr .)
+    gt              reduce using rule 10 (expr -> expr TIMES expr .)
+    ge              reduce using rule 10 (expr -> expr TIMES expr .)
+    eq              reduce using rule 10 (expr -> expr TIMES expr .)
+    ne              reduce using rule 10 (expr -> expr TIMES expr .)
+    RPAREN          reduce using rule 10 (expr -> expr TIMES expr .)
+    COMMA           reduce using rule 10 (expr -> expr TIMES expr .)
+    POWER           shift and go to state 38
+
+  ! POWER           [ reduce using rule 10 (expr -> expr TIMES expr .) ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
+
+
+state 62
 
     (11) expr -> expr DIVIDE expr .
     (8) expr -> expr . PLUS expr
@@ -1483,64 +1429,26 @@ state 70
     MINUS           reduce using rule 11 (expr -> expr DIVIDE expr .)
     TIMES           reduce using rule 11 (expr -> expr DIVIDE expr .)
     DIVIDE          reduce using rule 11 (expr -> expr DIVIDE expr .)
-    RPAREN          reduce using rule 11 (expr -> expr DIVIDE expr .)
-    COMMA           reduce using rule 11 (expr -> expr DIVIDE expr .)
+    $end            reduce using rule 11 (expr -> expr DIVIDE expr .)
+    then            reduce using rule 11 (expr -> expr DIVIDE expr .)
     lt              reduce using rule 11 (expr -> expr DIVIDE expr .)
     le              reduce using rule 11 (expr -> expr DIVIDE expr .)
     gt              reduce using rule 11 (expr -> expr DIVIDE expr .)
     ge              reduce using rule 11 (expr -> expr DIVIDE expr .)
     eq              reduce using rule 11 (expr -> expr DIVIDE expr .)
     ne              reduce using rule 11 (expr -> expr DIVIDE expr .)
-    then            reduce using rule 11 (expr -> expr DIVIDE expr .)
-    $end            reduce using rule 11 (expr -> expr DIVIDE expr .)
-    POWER           shift and go to state 43
+    RPAREN          reduce using rule 11 (expr -> expr DIVIDE expr .)
+    COMMA           reduce using rule 11 (expr -> expr DIVIDE expr .)
+    POWER           shift and go to state 38
 
   ! POWER           [ reduce using rule 11 (expr -> expr DIVIDE expr .) ]
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
-  ! TIMES           [ shift and go to state 46 ]
-  ! DIVIDE          [ shift and go to state 40 ]
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
 
 
-state 71
-
-    (20) relexpr -> expr le expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    RPAREN          reduce using rule 20 (relexpr -> expr le expr .)
-    then            reduce using rule 20 (relexpr -> expr le expr .)
-    $end            reduce using rule 20 (relexpr -> expr le expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 72
-
-    (23) relexpr -> expr eq expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    RPAREN          reduce using rule 23 (relexpr -> expr eq expr .)
-    then            reduce using rule 23 (relexpr -> expr eq expr .)
-    $end            reduce using rule 23 (relexpr -> expr eq expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 73
+state 63
 
     (12) expr -> expr POWER expr .
     (8) expr -> expr . PLUS expr
@@ -1554,95 +1462,46 @@ state 73
     TIMES           reduce using rule 12 (expr -> expr POWER expr .)
     DIVIDE          reduce using rule 12 (expr -> expr POWER expr .)
     POWER           reduce using rule 12 (expr -> expr POWER expr .)
-    RPAREN          reduce using rule 12 (expr -> expr POWER expr .)
-    COMMA           reduce using rule 12 (expr -> expr POWER expr .)
+    $end            reduce using rule 12 (expr -> expr POWER expr .)
+    then            reduce using rule 12 (expr -> expr POWER expr .)
     lt              reduce using rule 12 (expr -> expr POWER expr .)
     le              reduce using rule 12 (expr -> expr POWER expr .)
     gt              reduce using rule 12 (expr -> expr POWER expr .)
     ge              reduce using rule 12 (expr -> expr POWER expr .)
     eq              reduce using rule 12 (expr -> expr POWER expr .)
     ne              reduce using rule 12 (expr -> expr POWER expr .)
-    then            reduce using rule 12 (expr -> expr POWER expr .)
-    $end            reduce using rule 12 (expr -> expr POWER expr .)
+    RPAREN          reduce using rule 12 (expr -> expr POWER expr .)
+    COMMA           reduce using rule 12 (expr -> expr POWER expr .)
 
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
-  ! TIMES           [ shift and go to state 46 ]
-  ! DIVIDE          [ shift and go to state 40 ]
-  ! POWER           [ shift and go to state 43 ]
-
-
-state 74
-
-    (22) relexpr -> expr ge expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    RPAREN          reduce using rule 22 (relexpr -> expr ge expr .)
-    then            reduce using rule 22 (relexpr -> expr ge expr .)
-    $end            reduce using rule 22 (relexpr -> expr ge expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+  ! PLUS            [ shift and go to state 34 ]
+  ! MINUS           [ shift and go to state 35 ]
+  ! TIMES           [ shift and go to state 36 ]
+  ! DIVIDE          [ shift and go to state 37 ]
+  ! POWER           [ shift and go to state 38 ]
 
 
-state 75
+state 64
 
-    (24) relexpr -> expr ne expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
+    (17) expr -> LPAREN expr RPAREN .
 
-    RPAREN          reduce using rule 24 (relexpr -> expr ne expr .)
-    then            reduce using rule 24 (relexpr -> expr ne expr .)
-    $end            reduce using rule 24 (relexpr -> expr ne expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
-
-
-state 76
-
-    (10) expr -> expr TIMES expr .
-    (8) expr -> expr . PLUS expr
-    (9) expr -> expr . MINUS expr
-    (10) expr -> expr . TIMES expr
-    (11) expr -> expr . DIVIDE expr
-    (12) expr -> expr . POWER expr
-
-    PLUS            reduce using rule 10 (expr -> expr TIMES expr .)
-    MINUS           reduce using rule 10 (expr -> expr TIMES expr .)
-    TIMES           reduce using rule 10 (expr -> expr TIMES expr .)
-    DIVIDE          reduce using rule 10 (expr -> expr TIMES expr .)
-    RPAREN          reduce using rule 10 (expr -> expr TIMES expr .)
-    COMMA           reduce using rule 10 (expr -> expr TIMES expr .)
-    lt              reduce using rule 10 (expr -> expr TIMES expr .)
-    le              reduce using rule 10 (expr -> expr TIMES expr .)
-    gt              reduce using rule 10 (expr -> expr TIMES expr .)
-    ge              reduce using rule 10 (expr -> expr TIMES expr .)
-    eq              reduce using rule 10 (expr -> expr TIMES expr .)
-    ne              reduce using rule 10 (expr -> expr TIMES expr .)
-    then            reduce using rule 10 (expr -> expr TIMES expr .)
-    $end            reduce using rule 10 (expr -> expr TIMES expr .)
-    POWER           shift and go to state 43
-
-  ! POWER           [ reduce using rule 10 (expr -> expr TIMES expr .) ]
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
-  ! TIMES           [ shift and go to state 46 ]
-  ! DIVIDE          [ shift and go to state 40 ]
+    PLUS            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    MINUS           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    TIMES           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    DIVIDE          reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    POWER           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    $end            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    then            reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    lt              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    le              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    gt              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    ge              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    eq              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    ne              reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 17 (expr -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 17 (expr -> LPAREN expr RPAREN .)
 
 
-state 77
+state 65
 
     (19) relexpr -> expr lt expr .
     (8) expr -> expr . PLUS expr
@@ -1651,46 +1510,192 @@ state 77
     (11) expr -> expr . DIVIDE expr
     (12) expr -> expr . POWER expr
 
-    RPAREN          reduce using rule 19 (relexpr -> expr lt expr .)
     then            reduce using rule 19 (relexpr -> expr lt expr .)
     $end            reduce using rule 19 (relexpr -> expr lt expr .)
-    PLUS            shift and go to state 38
-    MINUS           shift and go to state 49
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    RPAREN          reduce using rule 19 (relexpr -> expr lt expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
 
 
-state 78
+state 66
 
-    (9) expr -> expr MINUS expr .
+    (20) relexpr -> expr le expr .
     (8) expr -> expr . PLUS expr
     (9) expr -> expr . MINUS expr
     (10) expr -> expr . TIMES expr
     (11) expr -> expr . DIVIDE expr
     (12) expr -> expr . POWER expr
 
-    PLUS            reduce using rule 9 (expr -> expr MINUS expr .)
-    MINUS           reduce using rule 9 (expr -> expr MINUS expr .)
-    RPAREN          reduce using rule 9 (expr -> expr MINUS expr .)
-    COMMA           reduce using rule 9 (expr -> expr MINUS expr .)
-    lt              reduce using rule 9 (expr -> expr MINUS expr .)
-    le              reduce using rule 9 (expr -> expr MINUS expr .)
-    gt              reduce using rule 9 (expr -> expr MINUS expr .)
-    ge              reduce using rule 9 (expr -> expr MINUS expr .)
-    eq              reduce using rule 9 (expr -> expr MINUS expr .)
-    ne              reduce using rule 9 (expr -> expr MINUS expr .)
-    then            reduce using rule 9 (expr -> expr MINUS expr .)
-    $end            reduce using rule 9 (expr -> expr MINUS expr .)
-    TIMES           shift and go to state 46
-    DIVIDE          shift and go to state 40
-    POWER           shift and go to state 43
+    then            reduce using rule 20 (relexpr -> expr le expr .)
+    $end            reduce using rule 20 (relexpr -> expr le expr .)
+    RPAREN          reduce using rule 20 (relexpr -> expr le expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
 
-  ! TIMES           [ reduce using rule 9 (expr -> expr MINUS expr .) ]
-  ! DIVIDE          [ reduce using rule 9 (expr -> expr MINUS expr .) ]
-  ! POWER           [ reduce using rule 9 (expr -> expr MINUS expr .) ]
-  ! PLUS            [ shift and go to state 38 ]
-  ! MINUS           [ shift and go to state 49 ]
+
+state 67
+
+    (21) relexpr -> expr gt expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    then            reduce using rule 21 (relexpr -> expr gt expr .)
+    $end            reduce using rule 21 (relexpr -> expr gt expr .)
+    RPAREN          reduce using rule 21 (relexpr -> expr gt expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 68
+
+    (22) relexpr -> expr ge expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    then            reduce using rule 22 (relexpr -> expr ge expr .)
+    $end            reduce using rule 22 (relexpr -> expr ge expr .)
+    RPAREN          reduce using rule 22 (relexpr -> expr ge expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 69
+
+    (23) relexpr -> expr eq expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    then            reduce using rule 23 (relexpr -> expr eq expr .)
+    $end            reduce using rule 23 (relexpr -> expr eq expr .)
+    RPAREN          reduce using rule 23 (relexpr -> expr eq expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 70
+
+    (24) relexpr -> expr ne expr .
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    then            reduce using rule 24 (relexpr -> expr ne expr .)
+    $end            reduce using rule 24 (relexpr -> expr ne expr .)
+    RPAREN          reduce using rule 24 (relexpr -> expr ne expr .)
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 71
+
+    (25) relexpr -> LPAREN relexpr RPAREN .
+
+    then            reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
+    $end            reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
+    RPAREN          reduce using rule 25 (relexpr -> LPAREN relexpr RPAREN .)
+
+
+state 72
+
+    (31) statement -> else if expr then .
+
+    $end            reduce using rule 31 (statement -> else if expr then .)
+
+
+state 73
+
+    (32) statement -> else if relexpr then .
+
+    $end            reduce using rule 32 (statement -> else if relexpr then .)
+
+
+state 74
+
+    (33) statement -> repeat until relexpr then .
+
+    $end            reduce using rule 33 (statement -> repeat until relexpr then .)
+
+
+state 75
+
+    (34) statement -> repeat until expr then .
+
+    $end            reduce using rule 34 (statement -> repeat until expr then .)
+
+
+state 76
+
+    (17) expr -> LPAREN expr . RPAREN
+    (19) relexpr -> expr . lt expr
+    (20) relexpr -> expr . le expr
+    (21) relexpr -> expr . gt expr
+    (22) relexpr -> expr . ge expr
+    (23) relexpr -> expr . eq expr
+    (24) relexpr -> expr . ne expr
+    (8) expr -> expr . PLUS expr
+    (9) expr -> expr . MINUS expr
+    (10) expr -> expr . TIMES expr
+    (11) expr -> expr . DIVIDE expr
+    (12) expr -> expr . POWER expr
+
+    RPAREN          shift and go to state 64
+    lt              shift and go to state 42
+    le              shift and go to state 43
+    gt              shift and go to state 44
+    ge              shift and go to state 45
+    eq              shift and go to state 46
+    ne              shift and go to state 47
+    PLUS            shift and go to state 34
+    MINUS           shift and go to state 35
+    TIMES           shift and go to state 36
+    DIVIDE          shift and go to state 37
+    POWER           shift and go to state 38
+
+
+state 77
+
+    (40) args -> variable .
+
+    RPAREN          reduce using rule 40 (args -> variable .)
+    COMMA           reduce using rule 40 (args -> variable .)
+
+
+state 78
+
+    (35) statement -> function variable LPAREN args . RPAREN then
+    (39) args -> args . COMMA variable
+
+    RPAREN          shift and go to state 81
+    COMMA           shift and go to state 82
 
 
 state 79
@@ -1702,9 +1707,9 @@ state 79
 
 state 80
 
-    (38) call_args -> call_args COMMA . call_args
-    (37) call_args -> . expr
-    (38) call_args -> . call_args COMMA call_args
+    (37) call_args -> expr COMMA . call_args
+    (37) call_args -> . expr COMMA call_args
+    (38) call_args -> . expr
     (8) expr -> . expr PLUS expr
     (9) expr -> . expr MINUS expr
     (10) expr -> . expr TIMES expr
@@ -1718,55 +1723,51 @@ state 80
     (18) expr -> . MINUS expr
     (26) variable -> . ID
 
-    INTEGER         shift and go to state 17
-    FLOAT           shift and go to state 18
-    STRING          shift and go to state 19
-    LPAREN          shift and go to state 25
-    MINUS           shift and go to state 24
-    ID              shift and go to state 20
+    INTEGER         shift and go to state 16
+    FLOAT           shift and go to state 17
+    STRING          shift and go to state 18
+    LPAREN          shift and go to state 20
+    MINUS           shift and go to state 15
+    ID              shift and go to state 21
 
-    variable                       shift and go to state 23
-    call_args                      shift and go to state 83
     expr                           shift and go to state 58
+    call_args                      shift and go to state 83
+    variable                       shift and go to state 19
 
 state 81
 
-    (35) statement -> function ID LPAREN args RPAREN . then
+    (35) statement -> function variable LPAREN args RPAREN . then
 
     then            shift and go to state 84
 
 
 state 82
 
-    (40) args -> ID COMMA . args
-    (39) args -> . ID
-    (40) args -> . ID COMMA args
+    (39) args -> args COMMA . variable
+    (26) variable -> . ID
 
-    ID              shift and go to state 60
+    ID              shift and go to state 21
 
-    args                           shift and go to state 85
+    variable                       shift and go to state 85
 
 state 83
 
-    (38) call_args -> call_args COMMA call_args .
-    (38) call_args -> call_args . COMMA call_args
+    (37) call_args -> expr COMMA call_args .
 
-    RPAREN          reduce using rule 38 (call_args -> call_args COMMA call_args .)
-    COMMA           shift and go to state 80
-
-  ! COMMA           [ reduce using rule 38 (call_args -> call_args COMMA call_args .) ]
+    RPAREN          reduce using rule 37 (call_args -> expr COMMA call_args .)
 
 
 state 84
 
-    (35) statement -> function ID LPAREN args RPAREN then .
+    (35) statement -> function variable LPAREN args RPAREN then .
 
-    $end            reduce using rule 35 (statement -> function ID LPAREN args RPAREN then .)
+    $end            reduce using rule 35 (statement -> function variable LPAREN args RPAREN then .)
 
 
 state 85
 
-    (40) args -> ID COMMA args .
+    (39) args -> args COMMA variable .
 
-    RPAREN          reduce using rule 40 (args -> ID COMMA args .)
+    RPAREN          reduce using rule 39 (args -> args COMMA variable .)
+    COMMA           reduce using rule 39 (args -> args COMMA variable .)
 
