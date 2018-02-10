@@ -18,14 +18,14 @@ all_args=_aparser.parse_args()
 
 
 if all_args.file:
-    _file_path=all_args.file[0]
-    _code_from_file=util.get_code_from_file(_file_path)
-    object_code=chakshu_parser.run_parser(_code_from_file,enable_input_mode=False)
-    py_code=trans_util.get_translated_code(object_code,language='py')
-    trans_util.make_code_file(_file_path,'py',py_code)
-    if all_args.compiled_output is None:
+    _file_path=all_args.file[0] #file path from args
+    _code_from_file=util.get_code_from_file(_file_path) #fetching code from input file $func inside util
+    object_code=chakshu_parser.run_parser(_code_from_file,enable_input_mode=False)     #making chakshu object code i.e parsing/validating code and returing object $func inside _parser
+    py_code=trans_util.get_translated_code(object_code,language='py') #generating code for from chakshu object code $func in trans_util
+    trans_util.make_code_file(_file_path,'py',py_code)  #making file for translated code $func in util
+    if all_args.compiled_output is None:        #print translated code
         print(py_code.strip())
-    if all_args.execute is None:
+    if all_args.execute is None:    #print the output of program
         os.system('python '+_file_path+'.py')
 
 else :
