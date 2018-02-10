@@ -8,7 +8,8 @@ precedence = (
     ('left', 'PLUS', 'MINUS'),
     ('left', 'TIMES', 'DIVIDE'),
     ('left', 'POWER'),
-    ('right', 'UMINUS')
+    ('right', 'UMINUS'),
+    ('right','COMMA')
 )
 parse_tree = []
 
@@ -135,12 +136,55 @@ def p_statement_elif(p):
     '''statement : else if expr then
             | else if relexpr then'''
     p[0]=('ELIF',p[3])
-# #####                 #######
-#       Parser functions      #
-# ####                  #######
+
+def p_statement_repeat(p):
+    '''statement : repeat until relexpr then
+                | repeat until expr then
+            '''
+    p[0] = ('REPEAT', p[3])
+
+def p_statement_function(p):
+    '''
+    statement : function ID LPAREN args RPAREN then
+        '''
+
+    p[0] = ('FUNCTION', p[2], p[4])
+    print(p)
+
+def p_statement_function_call(p):
+    '''
+    statement : ID LPAREN call_args RPAREN
+    '''
+    p[0] = ('FUNCTION-CALL', p[1], p[3])
+
+def p_call_args(p):
+    '''
+    call_args : expr
+             |  call_args COMMA call_args
+    '''
+    if len(p)>1:
+        p[0]=(p[1],p[3])
+    else :
+        p[0]=(p[1])
+
+def p_args(p):
+    '''
+    args : ID
+        | ID COMMA args
+    '''    
+    if len(p)>1:
+        p[0] = (p[1], p[3])
+    else:
+        p[0] = (p[1]) 
+       
 def p_statement_end(p):
     'statement : end'
     p[0]=('END','')
+# #####                 #######
+#       Parser functions      #
+# ####                  #######
+# hello...?
+
 
 def yield_next_line():
     global  _CODE

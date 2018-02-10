@@ -31,5 +31,6 @@ if all_args.file:
         os.system('python '+_file_path+'.py')
 
 else :
-    _aparser.parse_args(['-h'])
+    #_aparser.parse_args(['-h'])
+    chakshu_parser.run_parser(enable_input_mode=True)
 #print(all_args)

@@ -8,8 +8,16 @@ keywords=(
 tokens = keywords + (
      'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'POWER',
       'COMMA', 'SEMI', 'INTEGER', 'FLOAT', 'STRING',
-    'ID', 'NEWLINE','LPAREN','RPAREN'
+    'ID', 'NEWLINE','LPAREN','RPAREN', 'ARGS'
 )
+'''
+for i in range():
+
+for(int i=0; i<n; i++){}
+
+repeat untll cond then {} end
+'''
+
 t_ignore=' \t'
 def t_ID(t):
     r'[A-Z a-z _][A-Z0-9a-z_]*'
@@ -35,7 +43,6 @@ t_SEMI = r';'
 t_INTEGER = r'\d+'
 t_FLOAT = r'((\d*\.\d+)(E[\+-]?\d+)?|([1-9]\d*E[\+-]?\d+))'
 t_STRING = r'(\".*?\")|(\'.*?\')'
-
 
 def t_NEWLINE(t):
     r'\n'
