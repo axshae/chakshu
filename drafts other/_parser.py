@@ -65,7 +65,10 @@ def p_expr_number(p):
 def p_expr_string(p):
     'expr : STRING'
     p[0]=('STR',p[1])
-    p[0]='\"'+p[1]+'\"'
+    if p[1].startswith('\''):
+         p[0]=p[1].replace("\'",'\"')
+    else :
+        p[0]=p[1]
 
 def p_expr_variable(p):
     '''expr : variable'''
@@ -172,8 +175,7 @@ def yield_next_line():
 
 
 def run_parser(code='',enable_input_mode=False):
-    intro = '\nCHAKSHU V0.1 MIT LICENSE APPLICABLE.\nFounded by Akshay Chauhan and Paramdeep Singh.\n'
-    print(intro)
+    
     global _CODE
     _CODE=code
     code_next=yield_next_line()
