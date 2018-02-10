@@ -3,7 +3,9 @@ import _parser as chakshu_parser
 import util
 import trans_util
 import os
-
+'''
+# QUESTION arparse help: https://docs.python.org/3/library/argparse.html#nargs
+'''
 _help_text={
 '-intro':'\nCHAKSHU V0.1 MIT LICENSE APPLICABLE . Authored by Akshay Chauhan and Paramdeep Singh.\n',
 '-f':'chakshu program path',
@@ -15,7 +17,7 @@ _aparser.add_argument('-f','--file',nargs=1,help=_help_text['-f'])
 _aparser.add_argument('-e','--execute',nargs='?',help=_help_text['-e'],default='-1')
 _aparser.add_argument('-c','--compiled-output',nargs='?',help=_help_text['-c'],default='-1')
 all_args=_aparser.parse_args()
-
+print(all_args)
 
 if all_args.file:
     _file_path=all_args.file[0] #file path from args
