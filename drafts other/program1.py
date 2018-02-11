@@ -16,4 +16,7 @@ repeat until a<20 then
   print(a)
   a=a+1
 end
+var=input 'gimme input:'
+print 'output is:'
+print var
 func1()

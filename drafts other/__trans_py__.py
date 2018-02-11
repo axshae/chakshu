@@ -9,7 +9,8 @@ _py_carbon={
     'PRINT':'print($rvalue)',
     'FUNCTION':'def $name($params):',
     'FUNCTION-CALL':'$name($params)',
-    'REPEAT': 'while $rvalue :'
+    'REPEAT': 'while $rvalue :',
+    'INPUT': '$name=input($rvalue)'
 }
 # 'abc'*'bbcbc'
 def get_spaces(scope):
@@ -30,7 +31,7 @@ def generate_code(obj,scope):
     t=obj[0]
     gen_code=''
     _scope_spaces=get_spaces(scope)
-    if t=='ID':
+    if t in  ['ID','INPUT']:
         gen_code=_py_carbon[t].replace('$name',obj[1])
         gen_code=gen_code.replace('$rvalue',obj[2])
     elif t in ['FUNCTION','FUNCTION-CALL']:

@@ -63,7 +63,13 @@ def p_expr_number(p):
     p[0]=p[1]
 
 def p_expr_string(p):
-    'expr : STRING'
+    'expr : string'
+    p[0]=p[1]
+
+def p_string(p):
+    '''
+    string : STRING
+    '''
     p[0]=('STR',p[1])
     if p[1].startswith('\''):
          p[0]=p[1].replace("\'",'\"')
@@ -120,6 +126,19 @@ def p_statement_print(p):
     '''statement : print expr
                      '''
     p[0] = ['PRINT', p[2]]
+
+def p_statement_input(p):
+    '''
+    statement : input variable
+                | variable eq input string
+                | input
+    '''
+    if len(p)==3:
+        p[0] = ['INPUT',p[2],'']
+    elif len(p)==2:
+        p[0]=['INPUT','___temp___','']
+    else :
+        p[0] = ['INPUT',p[1],p[4]]
 
 def p_statement_if(p):
     '''statement : if expr then
