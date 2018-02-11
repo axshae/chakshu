@@ -4,7 +4,7 @@ import util
 import trans_util
 import os
 '''
-# QUESTION arparse help: https://docs.python.org/3/library/argparse.html#nargs
+# QUESTION arparse help: https://docs.python.org/3/library/argparse.html
 '''
 _help_text={
 '-intro':'\nCHAKSHU V0.1 MIT LICENSE APPLICABLE . Authored by Akshay Chauhan and Paramdeep Singh.\n',

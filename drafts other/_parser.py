@@ -184,16 +184,23 @@ def p_statement_function_bad(p):
     p[0] = 'Syntax for function defination is incorrect'
 
 def p_statement_function_call(p):
+    'statement : function_call'
+    p[0]=['FUNCTION-CALL',p[1]]
+
+def p_function_call(p):
     '''
-    statement : variable LPAREN call_args RPAREN
+    function_call : variable LPAREN call_args RPAREN
                 | variable LPAREN RPAREN
     '''
     if len(p)<5:
-        p[0] = ['FUNCTION-CALL', p[1],'']
+        p[0] = [ p[1],'']
+        p[0] = p[1]+p[2]+p[3]   #returning as string
     else :
-        p[0] = ['FUNCTION-CALL',p[1],p[3]]
+        p[0] = [p[1],p[3]]
+        p[0] = p[1]+p[2]+p[3]+p[4]  #returning as string
 
-def p_statement_function_call_bad(p):
+
+def p_function_call_bad(p):
     '''
     statement : variable error call_args RPAREN
                 | variable LPAREN error RPAREN
@@ -207,13 +214,16 @@ def p_statement_function_call_bad(p):
 def p_call_args(p):
     '''
     call_args : call_args COMMA expr
+             | call_args COMMA function_call
              |  expr
+             | function_call
     '''
     if len(p)>2:    #this fucking was causing error
-        p[0] = p[1] #still have error coz expr is a tuple and didnt have append method
-        p[0].append(p[3])
+        #p[0] = p[1] #still have error coz expr is a tuple and didnt have append method
+        #p[0].append(p[3])
+        p[0]=p[1]+p[2]+p[3] #returning as string
     else :
-        p[0]=[p[1]]
+        p[0]=p[1]   #returning as string
 
 def p_args(p):
     '''

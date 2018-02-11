@@ -13,9 +13,10 @@ function func1() then
 print 'hey buddy'
 end
 repeat until a<20 then
-  print(a)
+  print a
   a=a+1
 end
+input
 var=input 'gimme input:'
 print 'output is:'
 print var

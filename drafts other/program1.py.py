@@ -16,6 +16,7 @@ while a<20 :
 	print((a))
 	a=a+1
 	
+___temp___=input()
 var=input("gimme input:")
 print("output is:")
 print(var)

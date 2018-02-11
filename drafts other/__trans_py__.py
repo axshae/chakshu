@@ -13,6 +13,23 @@ _py_carbon={
     'INPUT': '$name=input($rvalue)'
 }
 # 'abc'*'bbcbc'
+# def make_function_call_statement(oobj):
+#     parmas_list=''
+#     for obj in oobj:
+#         if type(obj) is type([]):
+#             fname=obj[1]
+#             params=obj[2]
+#             params=join_params_list(params)
+#             call_def=_py_carbon['FUNCTION-CALL'].replace('$name',fname)
+#             call_def=call_def.replace('$params',params)
+#             params_list=parmas_list+call_def+','
+#         else :
+#             params_list=str(obj)
+#         return params_list
+# def make(obj):
+#
+#
+
 def get_spaces(scope):
     _=0
     _space=''
@@ -24,6 +41,7 @@ def get_spaces(scope):
 def join_params_list(ls):
     params_list=' '
     for p in ls:
+
         params_list=params_list+p+','
     return params_list[:-1]
 
@@ -34,13 +52,15 @@ def generate_code(obj,scope):
     if t in  ['ID','INPUT']:
         gen_code=_py_carbon[t].replace('$name',obj[1])
         gen_code=gen_code.replace('$rvalue',obj[2])
-    elif t in ['FUNCTION','FUNCTION-CALL']:
+    elif t in ['FUNCTION']:
         gen_code=_py_carbon[t].replace('$name',obj[1])
         params=obj[2]
-        if type(params) != type([]):
+        if type(params) == type([]):
             params=join_params_list(params)
         gen_code=gen_code.replace('$params',params)
-
+    elif t in ['FUNCTION-CALL']:
+        #print(obj)
+        gen_code=obj[1]
     elif t in ['IF','ELIF','ELSE','PRINT','REPEAT']:
         gen_code=_py_carbon[t].replace('$rvalue',obj[1])
     return _scope_spaces+gen_code+'\n'
