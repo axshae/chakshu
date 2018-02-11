@@ -28,7 +28,7 @@ def p_statement_id(p):
                  | variable eq relexpr
                    '''
     p[0]=(('ID',p[1]),p[3],('OPR',p[2]))
-    p[0]=('ID',p[1],p[3])
+    p[0]=['ID',p[1],p[3]]
     # print("p_statement_id reached.")
 
 def p_statement_id_bad(p):
@@ -119,52 +119,82 @@ def p_error(p):
 def p_statement_print(p):
     '''statement : print expr
                      '''
-    p[0] = ('PRINT', p[2])
+    p[0] = ['PRINT', p[2]]
 
 def p_statement_if(p):
     '''statement : if expr then
             | if relexpr then'''
-    p[0]=('IF',p[2])
+    p[0]=['IF',p[2]]
 
 def p_statement_else(p):
     '''statement : else  then
             '''
-    p[0]=('ELSE','')
+    p[0]=['ELSE','']
 
 def p_statement_elif(p):
     '''statement : else if expr then
             | else if relexpr then'''
-    p[0]=('ELIF',p[3])
+    p[0]=['ELIF',p[3]]
 
 def p_statement_repeat(p):
     '''statement : repeat until relexpr then
                 | repeat until expr then
             '''
-    p[0] = ('REPEAT', p[3])
+    p[0] = ['REPEAT', p[3]]
 
 def p_statement_function(p):
     '''
     statement : function variable LPAREN args RPAREN then
+                | function variable LPAREN RPAREN then
         '''
-    print(p)
-    p[0] = ('FUNCTION', p[2],(p[4]))
+    if len(p)<7:
+        p[0] = ['FUNCTION', p[2],'']
+    else :
+        p[0] = ['FUNCTION',p[2],p[4]]
+
+def p_statement_function_bad(p):
+    '''
+    statement : function error LPAREN args RPAREN then
+                | function variable error args RPAREN then
+                | function variable LPAREN args error then
+                | function variable LPAREN error RPAREN then
+                | function error LPAREN RPAREN then
+                | function variable error RPAREN then
+                | function variable LPAREN error then
+    '''
+    p[0] = 'Syntax for function defination is incorrect'
 
 def p_statement_function_call(p):
     '''
-    statement : ID LPAREN call_args RPAREN
+    statement : variable LPAREN call_args RPAREN
+                | variable LPAREN RPAREN
     '''
-    p[0] = ('FUNCTION-CALL', p[1],(p[3]))
+    if len(p)<5:
+        p[0] = ['FUNCTION-CALL', p[1],'']
+    else :
+        p[0] = ['FUNCTION-CALL',p[1],p[3]]
+
+def p_statement_function_call_bad(p):
+    '''
+    statement : variable error call_args RPAREN
+                | variable LPAREN error RPAREN
+                | variable LPAREN call_args RPAREN statement
+                | variable LPAREN RPAREN statement
+                | variable error RPAREN
+
+    '''
+    p[0] = 'Syntax for function call is incorrect'
 
 def p_call_args(p):
     '''
-    call_args : expr COMMA call_args
+    call_args : call_args COMMA expr
              |  expr
     '''
     if len(p)>2:    #this fucking was causing error
         p[0] = p[1] #still have error coz expr is a tuple and didnt have append method
         p[0].append(p[3])
     else :
-        p[0]=list(p[1])
+        p[0]=[p[1]]
 
 def p_args(p):
     '''

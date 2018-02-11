@@ -9,3 +9,11 @@ end
 else if 10<c then
   print 'inner elif'
 end
+function func1() then
+print 'hey buddy'
+end
+repeat until a<20 then
+  print(a)
+  a=a+1
+end
+func1()

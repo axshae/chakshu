@@ -9,3 +9,11 @@ if a<b :
 elif 10<c :
 	print("inner elif")
 	
+def func1():
+	print("hey buddy")
+	
+while a<20 :
+	print((a))
+	a=a+1
+	
+func1()

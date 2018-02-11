@@ -5,9 +5,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'leftPLUSMINUSleftTIMESDIVIDEleftPOWERrightUMINUSrightCOMMAif else break function then in repeat print input include compile until to start end lt le gt ge ne eq and or PLUS MINUS TIMES DIVIDE POWER COMMA SEMI INTEGER FLOAT STRING ID NEWLINE LPAREN RPAREN ARGSprogram : statement\n            program : errorstatement : variable eq expr\n                 | variable eq relexpr\n                   statement : variable eq\n                    | variable error expr\n                    | variable error relexpr\n                    expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE expr\n            | expr POWER exprexpr : INTEGER\n            | FLOAT\n            expr : STRINGexpr : variableexpr : LPAREN expr RPARENexpr : MINUS expr %prec UMINUSrelexpr : expr lt expr\n               | expr le expr\n               | expr gt expr\n               | expr ge expr\n               | expr eq expr\n               | expr ne exprrelexpr : LPAREN relexpr RPARENvariable : IDstatement : print expr\n                     statement : if expr then\n            | if relexpr thenstatement : else  then\n            statement : else if expr then\n            | else if relexpr thenstatement : repeat until relexpr then\n                | repeat until expr then\n            \n    statement : function ID LPAREN args RPAREN then\n        \n    statement : ID LPAREN call_args RPAREN\n    \n    call_args : expr\n             |  call_args COMMA call_args\n    \n    args : ID\n        | ID COMMA args\n    statement : end'
+_lr_signature = 'leftPLUSMINUSleftTIMESDIVIDEleftPOWERrightUMINUSif else break function then in repeat print input include compile until to start end lt le gt ge ne eq and or PLUS MINUS TIMES DIVIDE POWER COMMA SEMI INTEGER FLOAT STRING ID NEWLINE LPAREN RPAREN ARGSprogram : statement\n            program : errorstatement : variable eq expr\n                 | variable eq relexpr\n                   statement : variable eq\n                    | variable error expr\n                    | variable error relexpr\n                    expr : expr PLUS expr\n            | expr MINUS expr\n            | expr TIMES expr\n            | expr DIVIDE expr\n            | expr POWER exprexpr : INTEGER\n            | FLOAT\n            expr : STRINGexpr : variableexpr : LPAREN expr RPARENexpr : MINUS expr %prec UMINUSrelexpr : expr lt expr\n               | expr le expr\n               | expr gt expr\n               | expr ge expr\n               | expr eq expr\n               | expr ne exprrelexpr : LPAREN relexpr RPARENvariable : IDstatement : print expr\n                     statement : if expr then\n            | if relexpr thenstatement : else  then\n            statement : else if expr then\n            | else if relexpr thenstatement : repeat until relexpr then\n                | repeat until expr then\n            \n    statement : function variable LPAREN args RPAREN then\n                | function variable LPAREN RPAREN then\n        \n    statement : function error LPAREN args RPAREN then\n                | function variable error args RPAREN then\n                | function variable LPAREN args error then\n                | function variable LPAREN error RPAREN then\n                | function error LPAREN RPAREN then\n                | function variable error RPAREN then\n                | function variable LPAREN error then\n    \n    statement : variable LPAREN call_args RPAREN\n                | variable LPAREN RPAREN\n    \n    statement : variable error call_args RPAREN\n                | variable LPAREN error RPAREN\n                | variable LPAREN call_args RPAREN statement\n                | variable LPAREN RPAREN statement\n                | variable error RPAREN\n\n    \n    call_args : call_args COMMA expr\n             |  expr\n    \n    args : args COMMA variable\n        | variable\n    statement : end'
     
-_lr_action_items = {'end':([0,],[1,]),'PLUS':([17,18,19,20,21,23,26,32,34,37,51,52,54,56,58,63,67,68,69,70,71,72,73,74,75,76,77,78,],[-13,-14,-15,-26,38,-16,38,38,38,38,-18,38,38,38,38,38,-17,-8,38,-11,38,38,-12,38,38,-10,38,-9,]),'function':([0,],[3,]),'gt':([17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[-13,-14,-15,-26,39,-16,39,39,39,-18,39,39,39,-17,-8,-11,-12,-10,-9,]),'le':([17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[-13,-14,-15,-26,41,-16,41,41,41,-18,41,41,41,-17,-8,-11,-12,-10,-9,]),'then':([7,17,18,19,20,21,22,23,31,32,34,35,51,66,67,68,69,70,71,72,73,74,75,76,77,78,81,],[14,-13,-14,-15,-26,47,50,-16,61,62,64,65,-18,-25,-17,-8,-21,-11,-20,-23,-12,-22,-24,-10,-19,-9,84,]),'ge':([17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[-13,-14,-15,-26,44,-16,44,44,44,-18,44,44,44,-17,-8,-11,-12,-10,-9,]),'TIMES':([17,18,19,20,21,23,26,32,34,37,51,52,54,56,58,63,67,68,69,70,71,72,73,74,75,76,77,78,],[-13,-14,-15,-26,46,-16,46,46,46,46,-18,46,46,46,46,46,-17,46,46,-11,46,46,-12,46,46,-10,46,46,]),'INTEGER':([8,9,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,]),'FLOAT':([8,9,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,]),'print':([0,],[9,]),'STRING':([8,9,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,]),'ID':([0,3,8,9,13,15,16,24,25,27,28,29,30,33,38,39,40,41,42,43,44,45,46,48,49,80,82,],[11,12,20,20,20,20,20,20,20,20,20,20,60,20,20,20,20,20,20,20,20,20,20,20,20,20,60,]),'until':([6,],[13,]),'LPAREN':([8,9,11,12,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[16,25,29,30,33,16,16,25,25,16,16,25,33,25,25,25,25,25,25,25,25,25,25,25,25,]),'MINUS':([8,9,13,15,16,17,18,19,20,21,23,24,25,26,27,28,29,32,33,34,37,38,39,40,41,42,43,44,45,46,48,49,51,52,54,56,58,63,67,68,69,70,71,72,73,74,75,76,77,78,80,],[24,24,24,24,24,-13,-14,-15,-26,49,-16,24,24,49,24,24,24,49,24,49,49,24,24,24,24,24,24,24,24,24,24,24,-18,49,49,49,49,49,-17,-8,49,-11,49,49,-12,49,49,-10,49,-9,24,]),'else':([0,],[7,]),'POWER':([17,18,19,20,21,23,26,32,34,37,51,52,54,56,58,63,67,68,69,70,71,72,73,74,75,76,77,78,],[-13,-14,-15,-26,43,-16,43,43,43,43,-18,43,43,43,43,43,-17,43,43,43,43,43,-12,43,43,43,43,43,]),'RPAREN':([17,18,19,20,23,36,37,51,52,57,58,59,60,63,66,67,68,69,70,71,72,73,74,75,76,77,78,83,85,],[-13,-14,-15,-26,-16,66,67,-18,67,79,-37,81,-39,67,-25,-17,-8,-21,-11,-20,-23,-12,-22,-24,-10,-19,-9,-38,-40,]),'error':([0,10,11,],[4,27,-26,]),'DIVIDE':([17,18,19,20,21,23,26,32,34,37,51,52,54,56,58,63,67,68,69,70,71,72,73,74,75,76,77,78,],[-13,-14,-15,-26,40,-16,40,40,40,40,-18,40,40,40,40,40,-17,40,40,-11,40,40,-12,40,40,-10,40,40,]),'eq':([10,11,17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[28,-26,-13,-14,-15,-26,42,-16,42,42,42,-18,42,42,42,-17,-8,-11,-12,-10,-9,]),'$end':([1,2,4,5,14,17,18,19,20,23,26,28,47,50,51,53,54,55,56,61,62,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,84,],[-41,0,-2,-1,-30,-13,-14,-15,-26,-16,-27,-5,-28,-29,-18,-7,-6,-4,-3,-33,-34,-31,-32,-25,-17,-8,-21,-11,-20,-23,-12,-22,-24,-10,-19,-9,-36,-35,]),'repeat':([0,],[6,]),'if':([0,7,],[8,15,]),'ne':([17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[-13,-14,-15,-26,45,-16,45,45,45,-18,45,45,45,-17,-8,-11,-12,-10,-9,]),'lt':([17,18,19,20,21,23,32,34,37,51,54,56,63,67,68,70,73,76,78,],[-13,-14,-15,-26,48,-16,48,48,48,-18,48,48,48,-17,-8,-11,-12,-10,-9,]),'COMMA':([17,18,19,20,23,51,57,58,60,67,68,70,73,76,78,83,],[-13,-14,-15,-26,-16,-18,80,-37,82,-17,-8,-11,-12,-10,-9,80,]),}
+_lr_action_items = {'error':([0,4,9,11,14,28,62,88,89,110,],[3,13,29,-26,38,63,91,-54,99,-53,]),'print':([0,37,67,],[5,5,5,]),'if':([0,7,37,67,],[6,26,6,6,]),'else':([0,37,67,],[7,7,7,]),'repeat':([0,37,67,],[8,8,8,]),'function':([0,37,67,],[9,9,9,]),'end':([0,37,67,],[10,10,10,]),'ID':([0,5,6,9,12,13,14,16,21,24,26,27,37,40,41,42,43,44,48,49,50,51,52,53,61,62,63,64,66,67,100,],[11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,11,]),'$end':([1,2,3,10,11,12,15,17,18,19,20,25,30,31,32,33,35,37,45,47,54,65,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,97,101,103,105,107,108,109,111,112,113,],[0,-1,-2,-55,-26,-5,-27,-13,-14,-15,-16,-30,-3,-4,-6,-7,-50,-45,-18,-28,-29,-46,-44,-49,-47,-8,-9,-10,-11,-12,-17,-19,-20,-21,-22,-23,-24,-25,-31,-32,-33,-34,-48,-36,-43,-42,-41,-35,-39,-40,-38,-37,]),'eq':([4,11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[12,-26,-13,-14,-15,-16,52,52,52,-18,52,52,52,-8,-9,-10,-11,-12,-17,52,]),'LPAREN':([4,5,6,11,12,13,14,16,21,24,26,27,28,29,40,41,42,43,44,48,49,50,51,52,53,61,66,],[14,21,24,-26,24,24,21,21,21,24,24,61,62,64,21,21,21,21,21,21,21,21,21,21,21,61,21,]),'INTEGER':([5,6,12,13,14,16,21,24,26,27,40,41,42,43,44,48,49,50,51,52,53,61,66,],[17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,17,]),'FLOAT':([5,6,12,13,14,16,21,24,26,27,40,41,42,43,44,48,49,50,51,52,53,61,66,],[18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,18,]),'STRING':([5,6,12,13,14,16,21,24,26,27,40,41,42,43,44,48,49,50,51,52,53,61,66,],[19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,19,]),'MINUS':([5,6,11,12,13,14,15,16,17,18,19,20,21,22,24,26,27,30,32,39,40,41,42,43,44,45,46,48,49,50,51,52,53,55,57,60,61,66,70,71,72,73,74,75,76,77,78,79,80,81,87,96,],[16,16,-26,16,16,16,41,16,-13,-14,-15,-16,16,41,16,16,16,41,41,41,16,16,16,16,16,-18,41,16,16,16,16,16,16,41,41,41,16,16,-8,-9,-10,-11,-12,-17,41,41,41,41,41,41,41,41,]),'then':([7,11,17,18,19,20,22,23,45,57,58,59,60,70,71,72,73,74,75,76,77,78,79,80,81,82,90,91,93,95,98,99,102,104,106,],[25,-26,-13,-14,-15,-16,47,54,-18,83,84,85,86,-8,-9,-10,-11,-12,-17,-19,-20,-21,-22,-23,-24,-25,101,103,105,107,108,109,111,112,113,]),'until':([8,],[27,]),'PLUS':([11,15,17,18,19,20,22,30,32,39,45,46,55,57,60,70,71,72,73,74,75,76,77,78,79,80,81,87,96,],[-26,40,-13,-14,-15,-16,40,40,40,40,-18,40,40,40,40,-8,-9,-10,-11,-12,-17,40,40,40,40,40,40,40,40,]),'TIMES':([11,15,17,18,19,20,22,30,32,39,45,46,55,57,60,70,71,72,73,74,75,76,77,78,79,80,81,87,96,],[-26,42,-13,-14,-15,-16,42,42,42,42,-18,42,42,42,42,42,42,-10,-11,-12,-17,42,42,42,42,42,42,42,42,]),'DIVIDE':([11,15,17,18,19,20,22,30,32,39,45,46,55,57,60,70,71,72,73,74,75,76,77,78,79,80,81,87,96,],[-26,43,-13,-14,-15,-16,43,43,43,43,-18,43,43,43,43,43,43,-10,-11,-12,-17,43,43,43,43,43,43,43,43,]),'POWER':([11,15,17,18,19,20,22,30,32,39,45,46,55,57,60,70,71,72,73,74,75,76,77,78,79,80,81,87,96,],[-26,44,-13,-14,-15,-16,44,44,44,44,-18,44,44,44,44,44,44,44,44,-12,-17,44,44,44,44,44,44,44,44,]),'lt':([11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[-26,-13,-14,-15,-16,48,48,48,-18,48,48,48,-8,-9,-10,-11,-12,-17,48,]),'le':([11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[-26,-13,-14,-15,-16,49,49,49,-18,49,49,49,-8,-9,-10,-11,-12,-17,49,]),'gt':([11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[-26,-13,-14,-15,-16,50,50,50,-18,50,50,50,-8,-9,-10,-11,-12,-17,50,]),'ge':([11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[-26,-13,-14,-15,-16,51,51,51,-18,51,51,51,-8,-9,-10,-11,-12,-17,51,]),'ne':([11,17,18,19,20,22,30,32,45,55,57,60,70,71,72,73,74,75,87,],[-26,-13,-14,-15,-16,53,53,53,-18,53,53,53,-8,-9,-10,-11,-12,-17,53,]),'RPAREN':([11,13,14,17,18,19,20,32,34,36,38,39,45,46,55,56,62,63,64,70,71,72,73,74,75,76,77,78,79,80,81,82,87,88,89,91,92,94,96,110,],[-26,35,37,-13,-14,-15,-16,-52,65,67,69,-52,-18,75,75,82,90,93,95,-8,-9,-10,-11,-12,-17,-19,-20,-21,-22,-23,-24,-25,75,-54,98,102,104,106,-51,-53,]),'COMMA':([11,17,18,19,20,32,34,36,39,45,70,71,72,73,74,75,88,89,92,94,96,110,],[-26,-13,-14,-15,-16,-52,66,66,-52,-18,-8,-9,-10,-11,-12,-17,-54,100,100,100,-51,-53,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -16,7 +16,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'call_args':([29,80,],[57,83,]),'args':([30,82,],[59,85,]),'statement':([0,],[5,]),'program':([0,],[2,]),'variable':([0,8,9,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[10,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,23,]),'expr':([8,9,13,15,16,24,25,27,28,29,33,38,39,40,41,42,43,44,45,46,48,49,80,],[21,26,32,34,37,51,52,54,56,58,63,68,69,70,71,72,73,74,75,76,77,78,58,]),'relexpr':([8,13,15,16,27,28,33,],[22,31,35,36,53,55,36,]),}
+_lr_goto_items = {'program':([0,],[1,]),'statement':([0,37,67,],[2,68,97,]),'variable':([0,5,6,9,12,13,14,16,21,24,26,27,37,40,41,42,43,44,48,49,50,51,52,53,61,62,63,64,66,67,100,],[4,20,20,28,20,20,20,20,20,20,20,20,4,20,20,20,20,20,20,20,20,20,20,20,20,88,88,88,20,4,110,]),'expr':([5,6,12,13,14,16,21,24,26,27,40,41,42,43,44,48,49,50,51,52,53,61,66,],[15,22,30,32,39,45,46,55,57,60,70,71,72,73,74,76,77,78,79,80,81,87,96,]),'relexpr':([6,12,13,24,26,27,61,],[23,31,33,56,58,59,56,]),'call_args':([13,14,],[34,36,]),'args':([62,63,64,],[89,92,94,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -26,45 +26,59 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> program","S'",1,None,None,None),
-  ('program -> statement','program',1,'p_program','_parser.py',17),
-  ('program -> error','program',1,'p_program_error','_parser.py',23),
-  ('statement -> variable eq expr','statement',3,'p_statement_id','_parser.py',28),
-  ('statement -> variable eq relexpr','statement',3,'p_statement_id','_parser.py',29),
-  ('statement -> variable eq','statement',2,'p_statement_id_bad','_parser.py',36),
-  ('statement -> variable error expr','statement',3,'p_statement_id_bad','_parser.py',37),
-  ('statement -> variable error relexpr','statement',3,'p_statement_id_bad','_parser.py',38),
-  ('expr -> expr PLUS expr','expr',3,'p_expr_binary','_parser.py',46),
-  ('expr -> expr MINUS expr','expr',3,'p_expr_binary','_parser.py',47),
-  ('expr -> expr TIMES expr','expr',3,'p_expr_binary','_parser.py',48),
-  ('expr -> expr DIVIDE expr','expr',3,'p_expr_binary','_parser.py',49),
-  ('expr -> expr POWER expr','expr',3,'p_expr_binary','_parser.py',50),
-  ('expr -> INTEGER','expr',1,'p_expr_number','_parser.py',60),
-  ('expr -> FLOAT','expr',1,'p_expr_number','_parser.py',61),
-  ('expr -> STRING','expr',1,'p_expr_string','_parser.py',67),
-  ('expr -> variable','expr',1,'p_expr_variable','_parser.py',75),
-  ('expr -> LPAREN expr RPAREN','expr',3,'p_expr_group','_parser.py',80),
-  ('expr -> MINUS expr','expr',2,'p_expr_unary','_parser.py',85),
-  ('relexpr -> expr lt expr','relexpr',3,'p_relexpr','_parser.py',92),
-  ('relexpr -> expr le expr','relexpr',3,'p_relexpr','_parser.py',93),
-  ('relexpr -> expr gt expr','relexpr',3,'p_relexpr','_parser.py',94),
-  ('relexpr -> expr ge expr','relexpr',3,'p_relexpr','_parser.py',95),
-  ('relexpr -> expr eq expr','relexpr',3,'p_relexpr','_parser.py',96),
-  ('relexpr -> expr ne expr','relexpr',3,'p_relexpr','_parser.py',97),
-  ('relexpr -> LPAREN relexpr RPAREN','relexpr',3,'p_relexpr_group','_parser.py',106),
-  ('variable -> ID','variable',1,'p_variable','_parser.py',111),
-  ('statement -> print expr','statement',2,'p_statement_print','_parser.py',121),
-  ('statement -> if expr then','statement',3,'p_statement_if','_parser.py',126),
-  ('statement -> if relexpr then','statement',3,'p_statement_if','_parser.py',127),
-  ('statement -> else then','statement',2,'p_statement_else','_parser.py',131),
-  ('statement -> else if expr then','statement',4,'p_statement_elif','_parser.py',136),
-  ('statement -> else if relexpr then','statement',4,'p_statement_elif','_parser.py',137),
-  ('statement -> repeat until relexpr then','statement',4,'p_statement_repeat','_parser.py',141),
-  ('statement -> repeat until expr then','statement',4,'p_statement_repeat','_parser.py',142),
-  ('statement -> function ID LPAREN args RPAREN then','statement',6,'p_statement_function','_parser.py',148),
-  ('statement -> ID LPAREN call_args RPAREN','statement',4,'p_statement_function_call','_parser.py',156),
-  ('call_args -> expr','call_args',1,'p_call_args','_parser.py',162),
-  ('call_args -> call_args COMMA call_args','call_args',3,'p_call_args','_parser.py',163),
-  ('args -> ID','args',1,'p_args','_parser.py',172),
-  ('args -> ID COMMA args','args',3,'p_args','_parser.py',173),
-  ('statement -> end','statement',1,'p_statement_end','_parser.py',181),
+  ('program -> statement','program',1,'p_program','_parser.py',16),
+  ('program -> error','program',1,'p_program_error','_parser.py',22),
+  ('statement -> variable eq expr','statement',3,'p_statement_id','_parser.py',27),
+  ('statement -> variable eq relexpr','statement',3,'p_statement_id','_parser.py',28),
+  ('statement -> variable eq','statement',2,'p_statement_id_bad','_parser.py',35),
+  ('statement -> variable error expr','statement',3,'p_statement_id_bad','_parser.py',36),
+  ('statement -> variable error relexpr','statement',3,'p_statement_id_bad','_parser.py',37),
+  ('expr -> expr PLUS expr','expr',3,'p_expr_binary','_parser.py',45),
+  ('expr -> expr MINUS expr','expr',3,'p_expr_binary','_parser.py',46),
+  ('expr -> expr TIMES expr','expr',3,'p_expr_binary','_parser.py',47),
+  ('expr -> expr DIVIDE expr','expr',3,'p_expr_binary','_parser.py',48),
+  ('expr -> expr POWER expr','expr',3,'p_expr_binary','_parser.py',49),
+  ('expr -> INTEGER','expr',1,'p_expr_number','_parser.py',59),
+  ('expr -> FLOAT','expr',1,'p_expr_number','_parser.py',60),
+  ('expr -> STRING','expr',1,'p_expr_string','_parser.py',66),
+  ('expr -> variable','expr',1,'p_expr_variable','_parser.py',74),
+  ('expr -> LPAREN expr RPAREN','expr',3,'p_expr_group','_parser.py',79),
+  ('expr -> MINUS expr','expr',2,'p_expr_unary','_parser.py',84),
+  ('relexpr -> expr lt expr','relexpr',3,'p_relexpr','_parser.py',91),
+  ('relexpr -> expr le expr','relexpr',3,'p_relexpr','_parser.py',92),
+  ('relexpr -> expr gt expr','relexpr',3,'p_relexpr','_parser.py',93),
+  ('relexpr -> expr ge expr','relexpr',3,'p_relexpr','_parser.py',94),
+  ('relexpr -> expr eq expr','relexpr',3,'p_relexpr','_parser.py',95),
+  ('relexpr -> expr ne expr','relexpr',3,'p_relexpr','_parser.py',96),
+  ('relexpr -> LPAREN relexpr RPAREN','relexpr',3,'p_relexpr_group','_parser.py',105),
+  ('variable -> ID','variable',1,'p_variable','_parser.py',110),
+  ('statement -> print expr','statement',2,'p_statement_print','_parser.py',120),
+  ('statement -> if expr then','statement',3,'p_statement_if','_parser.py',125),
+  ('statement -> if relexpr then','statement',3,'p_statement_if','_parser.py',126),
+  ('statement -> else then','statement',2,'p_statement_else','_parser.py',130),
+  ('statement -> else if expr then','statement',4,'p_statement_elif','_parser.py',135),
+  ('statement -> else if relexpr then','statement',4,'p_statement_elif','_parser.py',136),
+  ('statement -> repeat until relexpr then','statement',4,'p_statement_repeat','_parser.py',140),
+  ('statement -> repeat until expr then','statement',4,'p_statement_repeat','_parser.py',141),
+  ('statement -> function variable LPAREN args RPAREN then','statement',6,'p_statement_function','_parser.py',147),
+  ('statement -> function variable LPAREN RPAREN then','statement',5,'p_statement_function','_parser.py',148),
+  ('statement -> function error LPAREN args RPAREN then','statement',6,'p_statement_function_bad','_parser.py',157),
+  ('statement -> function variable error args RPAREN then','statement',6,'p_statement_function_bad','_parser.py',158),
+  ('statement -> function variable LPAREN args error then','statement',6,'p_statement_function_bad','_parser.py',159),
+  ('statement -> function variable LPAREN error RPAREN then','statement',6,'p_statement_function_bad','_parser.py',160),
+  ('statement -> function error LPAREN RPAREN then','statement',5,'p_statement_function_bad','_parser.py',161),
+  ('statement -> function variable error RPAREN then','statement',5,'p_statement_function_bad','_parser.py',162),
+  ('statement -> function variable LPAREN error then','statement',5,'p_statement_function_bad','_parser.py',163),
+  ('statement -> variable LPAREN call_args RPAREN','statement',4,'p_statement_function_call','_parser.py',169),
+  ('statement -> variable LPAREN RPAREN','statement',3,'p_statement_function_call','_parser.py',170),
+  ('statement -> variable error call_args RPAREN','statement',4,'p_statement_function_call_bad','_parser.py',179),
+  ('statement -> variable LPAREN error RPAREN','statement',4,'p_statement_function_call_bad','_parser.py',180),
+  ('statement -> variable LPAREN call_args RPAREN statement','statement',5,'p_statement_function_call_bad','_parser.py',181),
+  ('statement -> variable LPAREN RPAREN statement','statement',4,'p_statement_function_call_bad','_parser.py',182),
+  ('statement -> variable error RPAREN','statement',3,'p_statement_function_call_bad','_parser.py',183),
+  ('call_args -> call_args COMMA expr','call_args',3,'p_call_args','_parser.py',190),
+  ('call_args -> expr','call_args',1,'p_call_args','_parser.py',191),
+  ('args -> args COMMA variable','args',3,'p_args','_parser.py',201),
+  ('args -> variable','args',1,'p_args','_parser.py',202),
+  ('statement -> end','statement',1,'p_statement_end','_parser.py',211),
 ]
