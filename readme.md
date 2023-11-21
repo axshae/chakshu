@@ -1,3 +1,16 @@
+## Chakshu
+
+### What is Chakshu?
+
+Chakshu, a small transpiler with high-level syntax made using Ply, is a testament to the power of combining simplicity with efficiency in language processing. Ply, short for Python Lex-Yacc, serves as the backbone for Chakshu, providing a robust parsing framework for the transpiler. The high-level syntax of Chakshu not only makes it accessible for developers but also facilitates the creation of concise and readable code. Leveraging the flexibility of Ply, Chakshu seamlessly translates the source code written in its user-friendly syntax into the desired target language. This project showcases the possibilities that arise when building specialized language processors, offering a valuable tool for developers seeking a straightforward yet powerful transpiler solution.
+
+### Why did i made this?
+
+I started Chakshu as my major for my degree. The project reflects my deep dive into language design and code generation, emphasizing simplicity without sacrificing functionality. Choosing a high-level syntax aims to make it accessible for developers. Completing Chakshu not only fulfilled academic requirements but also showcased my proficiency in language tools and compiler design, marking a milestone in my journey as a software developer.
+
+### Instructions
+
+```
 1. try ply_example file to know the how yacc actually works
 2. A production is defined by using p char before the name of the function which parses and perform the logic defined by us
 
@@ -53,3 +66,4 @@ precedence = (
 3. in production there must be space before and after colon (:)
 4. multi line productions using (|) must be written inside three quotes(''' ''')
 5. check your regex carefully before compiling like avoid using ^ or $
+```
