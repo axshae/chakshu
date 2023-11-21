@@ -141,7 +141,7 @@ def p_print_prod(p):
 def p_assign(p):
 	'assign : ID ASSIGNMENT printable'
 	global error
-	print(error)
+	#print(error)
 	ass = str(p[1]) + str(p[2]) + str(p[3])
 	if not error:
 		global code
@@ -161,12 +161,21 @@ def p_end_program(p):
 	tcode = py_parser.suite(code)
 	mcode = tcode.compile("file.py")
 	print("Code:\n", code)
-	op=exec(mcode)
-	print(op)
+	op=""
+	try:
+		op=exec(mcode)
+		if op is not None:
+			print(op)
+		code=""
+	except Exception as ex:
+		#print("OP:"+str(ex))
+		p_error(str(ex))
 
-def p_error(p):
-	print("Syntax Error")
+
+def p_error(p=None):
+	print("Error:"+p)
 	global error
+	code=""
 	error = True
 
 
